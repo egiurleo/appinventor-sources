@@ -775,6 +775,11 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
         select();
         break;
 
+      case Event.ONCONTEXTMENU:
+        cancelBrowserEvent(event);
+        //TODO: context menu of component should show up
+        break;
+
       default:
         // Ignore unexpected events
         break;
