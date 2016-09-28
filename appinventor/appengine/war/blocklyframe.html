@@ -1,4 +1,4 @@
-<!-- Copyright 2012 Massachusetts Institute of Technology. All Rights Reserved. -->
+<!-- Copyright © 2012-2016 Massachusetts Institute of Technology. All Rights Reserved. -->
 
 <!-- The contents of a blocks editor iframe in App Inventor -->
 <!DOCTYPE html>
@@ -6,6 +6,7 @@
   <head>
     <script type="text/javascript" src="closure-library/closure/goog/base.js"></script>
     <link type="text/css" rel="stylesheet" href="media/blockly.css">
+    <link type="text/css" rel="stylesheet" href="media/ai2blockly.css">
     <link type="text/css" rel="stylesheet" href="closure-library/closure/goog/css/dialog.css">
     <script type="text/javascript" src="blockly-@GUID@.js"></script>
     <style>
@@ -67,12 +68,25 @@
           window.parent.ReplState = new Blockly.ReplStateObj(); // There should be one of these for the whole system
         }
         window.parent.ReplState.phoneState = {}; <!-- Reset the phone state when we are reloaded -->
+      }
+      Blockly.init = function(completion) {
+        var formName = window.location.hash.substr(1);
         Blockly.BlocklyEditor.startup(document.body, formName);
         // Tell populateTypes the projectId, which is in the top
         // window's hash
         Blockly.ComponentTypes.populateTypes(top.location.hash.substr(1));
         window.parent.BlocklyPanel_initBlocksArea(formName);
-        window.parent.BlocklyPanel_checkWarningState(formName);
+        var callback = function() {
+          Blockly.getMainWorkspace().addWarningIndicator();
+          Blockly.getMainWorkspace().addBackpack();
+          window.parent.BlocklyPanel_checkWarningState(formName);
+          completion();
+        };
+        if (document.readyState != "complete") {
+          document.addEventListener('DOMContentLoaded', callback);
+        } else {
+          callback();
+        }
       }
     </script>
   </head>

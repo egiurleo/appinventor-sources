@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2013-2014 MIT, All rights reserved
+// Copyright © 2013-2016 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 /**
@@ -12,43 +12,39 @@
  *
  * @author mckinney@mit.edu (Andrew F. McKinney)
  * @author Sharon Perl (sharon@google.com)
+ * @author ewpatton@mit.edu (Evan W. Patton)
  */
 
 'use strict';
 
-goog.provide('Blockly.Drawer');
+goog.provide('AI.Blockly.Drawer');
 
 goog.require('Blockly.Flyout');
+goog.require('Blockly.Options');
 
 // Some block drawers need to be initialized after all the javascript source is loaded because they
 // use utility functions that may not yet be defined at the time their source is read in. They
 // can do this by adding a field to Blockly.DrawerInit whose value is their initialization function.
 // For example, see language/common/math.js.
 
-/**
- * Create the dom for the drawer. Creates a flyout Blockly.Drawer.flyout_,
- * and initializes its dom.
- */
-Blockly.Drawer.createDom = function() {
-  Blockly.Drawer.flyout_ = new Blockly.Flyout();
-  // insert the flyout after the main workspace (except, there's no
-  // svg.insertAfter method, so we need to insert before the thing following
-  // the main workspace. Neil Fraser says: this is "less hacky than it looks".
-  var flyoutGroup = Blockly.Drawer.flyout_.createDom();
-  Blockly.svg.insertBefore(flyoutGroup, Blockly.mainWorkspace.svgGroup_.nextSibling);
-};
-
-/**
- * Initializes the drawer by initializing the flyout and creating the
- * language tree. Call after calling createDom.
- */
-Blockly.Drawer.init = function() {
-  Blockly.Drawer.flyout_.init(Blockly.mainWorkspace, true);
-  for (var name in Blockly.DrawerInit) {
-    Blockly.DrawerInit[name]();
+Blockly.Drawer = function(parentWorkspace, opt_options) {
+  if (opt_options instanceof Blockly.Options) {
+    this.options = opt_options;
+  } else {
+    opt_options = opt_options || {};
+    this.options = new Blockly.Options(opt_options);
   }
-
-  Blockly.Drawer.languageTree = Blockly.Drawer.buildTree_();
+  this.options.languageTree = Blockly.Drawer.buildTree_();
+  this.workspace_ = parentWorkspace;
+  this.flyout_ = new Blockly.Flyout(this.options);
+  var flyoutGroup = this.flyout_.createDom(),
+      svg = this.workspace_.getParentSvg();
+  if (this.workspace_.svgGroup_.nextSibling == null) {
+    svg.appendChild(flyoutGroup);
+  } else {
+    svg.insertBefore(flyoutGroup, this.workspace_.svgGroup_.nextSibling);
+  }
+  this.flyout_.init(parentWorkspace);
 };
 
 /**
@@ -88,9 +84,9 @@ Blockly.Drawer.buildTree_ = function() {
  * Blockly.MSG_PROCEDURE_CATEGORY, or one of the built-in block categories.
  * @param drawerName
  */
-Blockly.Drawer.showBuiltin = function(drawerName) {
+Blockly.Drawer.prototype.showBuiltin = function(drawerName) {
   drawerName = Blockly.Drawer.PREFIX_ + drawerName;
-  var blockSet = Blockly.Drawer.languageTree[drawerName];
+  var blockSet = this.options.languageTree[drawerName];
   if(drawerName == "cat_Procedures") {
     var newBlockSet = [];
     for(var i=0;i<blockSet.length;i++) {
@@ -111,7 +107,7 @@ Blockly.Drawer.showBuiltin = function(drawerName) {
     throw "no such drawer: " + drawerName;
   }
   var xmlList = Blockly.Drawer.blockListToXMLArray(blockSet);
-  Blockly.Drawer.flyout_.show(xmlList);
+  this.flyout_.show(xmlList);
 };
 
 /**
@@ -119,12 +115,12 @@ Blockly.Drawer.showBuiltin = function(drawerName) {
  * such component is found, currently we just log a message to the console
  * and do nothing.
  */
-Blockly.Drawer.showComponent = function(instanceName) {
+Blockly.Drawer.prototype.showComponent = function(instanceName) {
   if (Blockly.ComponentInstances[instanceName]) {
-    Blockly.Drawer.flyout_.hide();
+    this.flyout_.hide();
 
     var xmlList = Blockly.Drawer.instanceNameToXMLArray(instanceName);
-    Blockly.Drawer.flyout_.show(xmlList);
+    this.flyout_.show(xmlList);
   } else {
     console.log("Got call to Blockly.Drawer.showComponent(" +  instanceName +
                 ") - unknown component name");
@@ -138,12 +134,12 @@ Blockly.Drawer.showComponent = function(instanceName) {
  * type is found, currently we just log a message to the console and do nothing.
  * @param drawerName
  */
-Blockly.Drawer.showGeneric = function(typeName) {
+Blockly.Drawer.prototype.showGeneric = function(typeName) {
   if (Blockly.ComponentTypes[typeName]) {
-    Blockly.Drawer.flyout_.hide();
+    this.flyout_.hide();
 
     var xmlList = Blockly.Drawer.componentTypeToXMLArray(typeName);
-    Blockly.Drawer.flyout_.show(xmlList);
+    this.flyout_.show(xmlList);
   } else {
     console.log("Got call to Blockly.Drawer.showGeneric(" +  typeName +
                 ") - unknown component type name");
@@ -153,15 +149,15 @@ Blockly.Drawer.showGeneric = function(typeName) {
 /**
  * Hide the Drawer flyout
  */
-Blockly.Drawer.hide = function() {
-  Blockly.Drawer.flyout_.hide();
+Blockly.Drawer.prototype.hide = function() {
+  this.flyout_.hide();
 };
 
 /**
  * @returns  true if the Drawer flyout is currently open, false otherwise.
  */
-Blockly.Drawer.isShowing = function() {
-  return Blockly.Drawer.flyout_.isVisible();
+Blockly.Drawer.prototype.isShowing = function() {
+  return this.flyout_.isVisible();
 };
 
 Blockly.Drawer.blockListToXMLArray = function(blockList) {

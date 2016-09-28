@@ -3,6 +3,11 @@
 <!-- ======================================================================
      Copyright 2012 Google Inc.  All Rights Reserved.
      Author: sharon@google.com (Sharon Perl)
+     Copyright © 2012-2016 Massachusetts Institute of Technology. All Rights Reserved.
+     Author: andrew.f.mckinney@gmail.com (Andrew F. McKinney)
+     Author: jis@mit.edu (Jeffrey I. Schiller)
+     Author: lizlooney@google.com (Liz Looney)
+     Author: ewpatton@mit.edu (Evan W. Patton)
 
      Blockly-based blocks editor
      ====================================================================== -->
@@ -35,7 +40,7 @@
 	<property name="run.dir" location="${local.build.dir}/run" />
 	<property name="run.lib.dir" location="${run.dir}/lib" />
 
-	<property name="blockly.src.dir" location="${lib.dir}/blockly/src" />
+	<property name="blockly.src.dir" location="${lib.dir}/blockly" />
 
 	<!-- =====================================================================
        Targets

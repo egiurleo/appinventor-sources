@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2013-2014 MIT, All rights reserved
+// Copyright © 2013-2016 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 /**
@@ -8,6 +8,7 @@
  * Methods to handle serialization of the blocks workspace
  * 
  * @author sharon@google.com (Sharon Perl)
+ * @author ewpatton@mit.edu (Evan W. Patton)
  *
  * History:
  * [lyn, 2014/10/31] Completely overhauled blocks upgrading architecture.
@@ -16,10 +17,13 @@
 
 'use strict';
 
-goog.provide('Blockly.SaveFile');
+goog.provide('AI.Blockly.SaveFile');
 
-goog.require('Blockly.Versioning');
-goog.require('Blockly.Instrument');
+// App Inventor extensions to Blockly
+goog.require('AI.Blockly.Versioning');
+goog.require('AI.Blockly.Instrument');
+
+if (Blockly.SaveFile === undefined) Blockly.SaveFile = {};
 
 Blockly.SaveFile.load = function(preUpgradeFormJson, blocksContent) {
   Blockly.Instrument.initializeStats("Blockly.SaveFile.load");

@@ -15,7 +15,9 @@
 
 'use strict';
 
-goog.provide('Blockly.Instrument');
+goog.provide('AI.Blockly.Instrument');
+
+if (Blockly.Instrument === undefined) Blockly.Instrument = {};
 
 /** Is instrumentation turned on? */
 // Blockly.Instrument.isOn = true;

@@ -1,5 +1,5 @@
 // -*- mode: Javascript; js-indent-level: 4; -*-
-// Copyright 2013 Massachusetts Institute of Technology. All rights reserved.
+// Copyright © 2013-2016 Massachusetts Institute of Technology. All rights reserved.
 
 /**
  * @fileoverview Visual blocks editor for App Inventor
@@ -10,13 +10,8 @@
 
 'use strict';
 
-goog.provide('Blockly.ReplMgr');
-goog.provide('Blockly.ReplStateObj');
-
-goog.require('Blockly.Component');
-goog.require('Blockly.Util');
-
-Blockly.ReplMgr.yail = null;
+goog.provide('AI.Blockly.ReplMgr');
+goog.provide('AI.Blockly.ReplStateObj');
 
 goog.require('goog.ui.Dialog');
 goog.require('goog.net.XmlHttp');
@@ -28,6 +23,13 @@ goog.require('goog.crypt.Hash');
 goog.require('goog.crypt.Sha1');
 goog.require('goog.crypt.Hmac');
 goog.require('goog.crypt.base64');
+
+// App Inventor extensions to Blockly
+goog.require('AI.Blockly.Component');
+goog.require('AI.Blockly.Util');
+
+if (Blockly.ReplMgr === undefined) Blockly.ReplMgr = {}
+Blockly.ReplMgr.yail = null;
 
 top.loadAll = true;             // Use "Chunked" loading for initial form load
                                 // or any case where we have more then one "chunk"

@@ -248,7 +248,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
       var procName = procDecl.getFieldValue('NAME');
 
       // 1. Change all callers so label reflects new name
-      Blockly.Procedures.mutateCallers(procName, procWorkspace, newArguments, procDecl.paramIds_);
+      Blockly.Procedures.mutateCallers(procDecl);
 
       var callers = Blockly.Procedures.getCallers(procName, procWorkspace);
       for (var x = 0; x < callers.length; x++) {
@@ -274,7 +274,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
           // superclass directly. I.e., can't do this:
           //   mutatorarg.getTitle_("NAME").setValue(newParamName);
           // so instead do this:
-            Blockly.Field.prototype.setText.call(mutatorarg.getField_("NAME"), newParamName);
+            Blockly.Field.prototype.setText.call(mutatorarg.getField("NAME"), newParamName);
         }
       }
       // console.log("exit procedureParameterChangeHandler");
@@ -337,8 +337,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     }
     // [lyn, 10/26/13] Rather than passing null for paramIds, pass actual paramIds
     // and use true flag to initialize tracking.
-    Blockly.Procedures.mutateCallers(this.getFieldValue('NAME'),
-                                     this.workspace, this.arguments_, this.paramIds_, true);
+    Blockly.Procedures.mutateCallers(this);
     return containerBlock;
   },
   compose: function(containerBlock) {
@@ -361,8 +360,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     // but renameParam updates procedure body appropriately.
     if (!Blockly.LexicalVariable.stringListsEqual(params, this.arguments_)) { // Only need updates if param list has changed
       this.updateParams_(params);
-      Blockly.Procedures.mutateCallers(this.getFieldValue('NAME'),
-        this.workspace, this.arguments_, this.paramIds_);
+      Blockly.Procedures.mutateCallers(this);
     }
     // console.log("exit procedures_defnoreturn compose()");
   },
@@ -372,7 +370,7 @@ Blockly.Blocks['procedures_defnoreturn'] = {
     var workspace = this.workspace;
 
     // Call parent's destructor.
-    Blockly.Block.prototype.dispose.apply(this, arguments);
+    Blockly.BlockSvg.prototype.dispose.apply(this, arguments);
 
     if (editable) {
       // Dispose of any callers.
@@ -748,8 +746,8 @@ Blockly.Blocks['procedures_callnoreturn'] = {
     this.quarkConnections_ = null;
     this.quarkArguments_ = null;
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}];
-    //Blockly.FieldProcedure.onChange.call(this.getField_("PROCNAME"),this.procNamesFxn(false)[0][0]);
-    Blockly.FieldProcedure.onChange.call(this.getField_("PROCNAME"),this.getField_("PROCNAME").getValue());
+    //Blockly.FieldProcedure.onChange.call(this.getField("PROCNAME"),this.procNamesFxn(false)[0][0]);
+    Blockly.FieldProcedure.onChange.call(this.getField("PROCNAME"),this.getField("PROCNAME").getValue());
   },
   getProcedureCall: function() {
     return this.getFieldValue('PROCNAME');
@@ -940,8 +938,8 @@ Blockly.Blocks['procedures_callreturn'] = {
     this.quarkConnections_ = null;
     this.quarkArguments_ = null;
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}];
-    //Blockly.FieldProcedure.onChange.call(this.getField_("PROCNAME"),this.procNamesFxn()[0][0]);
-    Blockly.FieldProcedure.onChange.call(this.getField_("PROCNAME"),this.getField_("PROCNAME").getValue());
+    //Blockly.FieldProcedure.onChange.call(this.getField("PROCNAME"),this.procNamesFxn()[0][0]);
+    Blockly.FieldProcedure.onChange.call(this.getField("PROCNAME"),this.getField("PROCNAME").getValue());
   },
   getProcedureCall: Blockly.Blocks.procedures_callnoreturn.getProcedureCall,
   renameProcedure: Blockly.Blocks.procedures_callnoreturn.renameProcedure,

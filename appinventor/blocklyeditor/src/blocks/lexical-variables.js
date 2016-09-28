@@ -369,7 +369,7 @@ Blockly.Blocks['local_declaration_statement'] = {
         }
         if (mutatorarg && mutatorargIndex == paramIndex) {
           // See Subtlety #3 in  procedureParameterChangeHandler in language/common/procedures.js
-          Blockly.Field.prototype.setText.call(mutatorarg.getField_("NAME"), newParamName);
+          Blockly.Field.prototype.setText.call(mutatorarg.getField("NAME"), newParamName);
         }
       }
     }
@@ -428,7 +428,7 @@ Blockly.Blocks['local_declaration_statement'] = {
   dispose: function() {
     // *** [lyn, 11/07/12] Dunno if anything needs to be done here.
     // Call parent's destructor.
-    Blockly.Block.prototype.dispose.apply(this, arguments);
+    Blockly.BlockSvg.prototype.dispose.apply(this, arguments);
     // [lyn, 11/07/12] In above line, don't know where "arguments" param comes from,
     // but if it's remove, there's no clicking sound upon deleting the block!
   },

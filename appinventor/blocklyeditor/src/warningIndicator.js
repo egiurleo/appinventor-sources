@@ -1,5 +1,5 @@
-// -*- mode: Javascript; js-indent-level: 4; -*-
-// Copyright 2013 Massachusetts Institute of Technology. All rights reserved.
+// -*- mode: Javascript; js-indent-level: 2; -*-
+// Copyright © 2013-2016 Massachusetts Institute of Technology. All rights reserved.
 
 /**
  * @license
@@ -7,11 +7,12 @@
  * Methods to handle warnings in the block editor.
  *
  * @author mckinney@mit.edu (Andrew F. McKinney)
+ * @author ewpatton@mit.edu (Evan W. Patton);
  */
 
 'use strict';
 
-goog.provide('Blockly.WarningIndicator');
+goog.provide('AI.Blockly.WarningIndicator');
 
 goog.require('goog.Timer');
 
@@ -90,8 +91,8 @@ Blockly.WarningIndicator.prototype.createDom = function() {
       this.iconGroup_);
   this.iconMark_ = Blockly.createSvgElement('text',
       {'class': 'blocklyWarningIconMark',
-       'x': Blockly.ErrorIcon.ICON_RADIUS,
-       'y': 2 * Blockly.ErrorIcon.ICON_RADIUS - 3}, this.iconGroup_);
+       'x': Blockly.Error.ICON_RADIUS,
+       'y': 2 * Blockly.Error.ICON_RADIUS - 3}, this.iconGroup_);
   this.iconMark_.appendChild(document.createTextNode('!'));
 
 
@@ -102,16 +103,17 @@ Blockly.WarningIndicator.prototype.createDom = function() {
 
   this.iconErrorGroup_ = Blockly.createSvgElement('g',
       {'class': 'blocklyIconGroup', 'transform':"translate(55,0)"}, this.svgGroup_);
-  var iconErrorShield = Blockly.createSvgElement('path',
-      {'class': 'blocklyErrorIconShield',
-       'd': 'M 2,15 Q -1,15 0.5,12 L 6.5,1.7 Q 8,-1 9.5,1.7 L 15.5,12 ' +
-       'Q 17,15 14,15 z','x':20},
+  Blockly.createSvgElement('circle',
+      {'class': 'blocklyErrorIconOutline',
+       'r': Blockly.Error.ICON_RADIUS,
+       'cx': Blockly.Error.ICON_RADIUS,
+       'cy': Blockly.Error.ICON_RADIUS}, this.iconErrorGroup_);
+  Blockly.createSvgElement('path',
+      {'class': 'blocklyErrorIconX',
+       'd': 'M 4,4 12,12 8,8 4,12 12,4'},
+                           // X fills circle vvv
+       //'d': 'M 3.1931458,3.1931458 12.756854,12.756854 8,8 3.0931458,12.756854 12.756854,3.0931458'},
       this.iconErrorGroup_);
-  this.iconErrorMark_ = Blockly.createSvgElement('text',
-      {'class': 'blocklyIconMark',
-       'x': Blockly.ErrorIcon.ICON_RADIUS,
-       'y': 2 * Blockly.ErrorIcon.ICON_RADIUS - 3}, this.iconErrorGroup_);
-  this.iconErrorMark_.appendChild(document.createTextNode('!'));
 
   this.warningToggle_ = Blockly.createSvgElement('rect',
       {'fill': "#eeeeee",'width':"120", 'height':"20", 'x':"-15",'y':"20",'style':"stroke:black;stroke-width:1;cursor:pointer;"},

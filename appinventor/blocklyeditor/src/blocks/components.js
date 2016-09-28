@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2013-2014 MIT, All rights reserved
+// Copyright © 2013-2016 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 /**
@@ -7,15 +7,21 @@
  * @fileoverview Component blocks for Blockly, modified for MIT App Inventor.
  * @author mckinney@mit.edu (Andrew F. McKinney)
  * @author sharon@google.com (Sharon Perl)
+ * @author ewpatton@mit.edu (Evan W. Patton)
  */
 
 'use strict';
 
-goog.provide('Blockly.Blocks.components');
-goog.provide('Blockly.ComponentBlock');
+goog.provide('AI.Blockly.Blocks.components');
+goog.provide('AI.Blockly.ComponentBlock');
 goog.require('Blockly.Blocks.Utilities');
+
+// App Inventor extensions to Blockly
+goog.require('AI.Blockly.ComponentTypes');
 goog.require('Blockly.TypeBlock');
-goog.require('Blockly.ComponentTypes');
+
+Blockly.Blocks.components = {};
+Blockly.ComponentBlock = {};
 
 /*
  * All component blocks have category=='Component'. In addition to the standard blocks fields,
@@ -31,9 +37,9 @@ goog.require('Blockly.ComponentTypes');
  */
 Blockly.ComponentBlock.COLOUR_EVENT = Blockly.CONTROL_CATEGORY_HUE;
 Blockly.ComponentBlock.COLOUR_METHOD = Blockly.PROCEDURE_CATEGORY_HUE;
-Blockly.ComponentBlock.COLOUR_GET = [67, 153, 112];
-Blockly.ComponentBlock.COLOUR_SET = [38, 102, 67];
-Blockly.ComponentBlock.COLOUR_COMPONENT = [67, 153, 112];
+Blockly.ComponentBlock.COLOUR_GET = '#439970';  // [67, 153, 112]
+Blockly.ComponentBlock.COLOUR_SET = '#266643';  // [38, 102, 67]
+Blockly.ComponentBlock.COLOUR_COMPONENT = '#439970';  // [67, 153, 112]
 
 //TODO(): add I18N
 
@@ -604,7 +610,7 @@ Blockly.Blocks.component_method = {
           modifiedReturnType = true; // missing return type
         }
         else {
-          this.changeOutput(Blockly.Blocks.Utilities.YailTypeToBlocklyType(method.returnType,Blockly.Blocks.Utilities.OUTPUT));
+          this.outputConnection.setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType(method.returnType,Blockly.Blocks.Utilities.OUTPUT));
         }
       }
       else if (!method.returnType) {

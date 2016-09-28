@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
+// Copyright © 2012-2016 Massachusetts Institute of Technology. All rights reserved.
 
 /**
  * @license
@@ -8,14 +8,21 @@
  *
  * @author mckinney@mit.edu (Andrew F. McKinney)
  * @author sharon@google.com (Sharon Perl)
+ * @author ewpatton@mit.edu (Evan W. Patton)
  */
 
 'use strict';
 
-goog.provide('Blockly.BlocklyEditor');
+goog.provide('AI.Blockly.BlocklyEditor');
 
-goog.require('Blockly.Drawer');
+goog.require('AI.Blockly.Drawer');
+
+// App Inventor extensions to Blockly
 goog.require('Blockly.TypeBlock');
+
+if (Blockly.BlocklyEditor === undefined) {
+  Blockly.BlocklyEditor = {};
+}
 
 Blockly.BlocklyEditor.startup = function(documentBody, formName) {
   var typeblock_config = {
@@ -24,27 +31,33 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
     inputText: 'ac_input_text'
   };
 
-  //This is what Blockly's init function does when passing options.
-  //We are overriding the init process so putting it here
-  goog.mixin(Blockly, {
+  // Consider moving this to blocklyeditor/src/blockly.js
+  Blockly.configForTypeBlock = typeblock_config;
+
+  var workspace = Blockly.inject(documentBody, {
+    readOnly: false,
     collapse : true,
-    hasScrollbars: true,
-    hasTrashcan: true,
-    hasBackpack: true,
+    scrollbars: true,
+    trashcan: true,
+    backpack: true,
     comments: true,
     disable: true,
-    configForTypeBlock: typeblock_config
+    media: './media/',
+    warningIndicator: true,
+    configForTypeBlock: typeblock_config,
+    grid: {spacing: '20', length: '5', snap: true, colour: '#ccc'},
+    zoom: {controls: true, wheel: true, scaleSpeed: 1.1}
   });
+  workspace.drawer_ = new Blockly.Drawer(workspace, {
+      scrollbars: true
+    });
+  workspace.backpack_ = new Blockly.Backpack(workspace);
 
-  Blockly.inject(documentBody);
-
-  Blockly.Drawer.createDom();
-  Blockly.Drawer.init();
   //This would also be done in Blockly init, but we need to do it here cause of
   //the different init process in drawer (it'd be undefined at the time it hits
   //init in Blockly)
   if (!Blockly.readOnly)
-    Blockly.TypeBlock(Blockly.configForTypeBlock);
+    Blockly.TypeBlock(typeblock_config);
 
   Blockly.BlocklyEditor.formName = formName;
 
@@ -138,10 +151,10 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
 
   /******************************************************************************/
 
-  Blockly.bindEvent_(Blockly.mainWorkspace.getCanvas(), 'blocklyWorkspaceChange', this,
+  Blockly.getMainWorkspace().addChangeListener(
       function() {
-        if (window.parent.BlocklyPanel_blocklyWorkspaceChanged){
-          window.parent.BlocklyPanel_blocklyWorkspaceChanged(Blockly.BlocklyEditor.formName);
+        if (top.BlocklyPanel_blocklyWorkspaceChanged){
+          top.BlocklyPanel_blocklyWorkspaceChanged(Blockly.BlocklyEditor.formName);
         }
         // [lyn 12/31/2013] Check for duplicate component event handlers before
         // running any error handlers to avoid quadratic time behavior.
@@ -152,7 +165,7 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
 Blockly.BlocklyEditor.render = function() {
   var start = new Date().getTime();
   Blockly.Instrument.initializeStats("Blockly.BlocklyEditor.render");
-  Blockly.mainWorkspace.render();
+  Blockly.getMainWorkspace().render();
   Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
   var stop = new Date().getTime();
   var timeDiff = stop - start;

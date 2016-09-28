@@ -1,9 +1,17 @@
 <?xml version="1.0"?>
 
 <!-- ======================================================================
-     Copyright 2011 Google Inc.  All Rights Reserved.
+     Copyright 2011-2012 Google Inc.  All Rights Reserved.
      Author: kerr@google.com (Debby Wallach)
      Author: lizlooney@google.com (Liz Looney)
+     Copyright © 2012-2016 Massachusetts Institute of Technology. All Rights Reserved.
+     Author: jis@mit.edu (Jeffrey I. Schiller)
+     Author: hal@mit.edu (Hal Abelson)
+     Author: ram8647@gmail.com (Ralph Morelli)
+     Author: andrew.f.mckinney@gmail.com (Andrew F. McKinney)
+     Author: paulmedwal@gmail.com (Paul Medlock-Walton)
+     Author: josmasflores@gmail.com (José Dominguez)
+     Author: ewpatton@mit.edu (Evan W. Patton)
 
      App Inventor appengine app
      ====================================================================== -->
@@ -85,10 +93,13 @@
         <include name="images/canvas.png" />
       </fileset>
       <fileset dir="${docs.dir}"/>
-      <fileset dir="${lib.dir}/blockly/src">
+      <fileset dir="${lib.dir}/blockly">
         <include name="media/*"/>
         <include name="**/*.css"/>
-        <include name="1x1.gif"/>
+        <exclude name="demo/**"/>
+      </fileset>
+      <fileset dir="${appinventor.dir}/blocklyeditor">
+        <include name="media/*"/>
       </fileset>
     </copy>
     <copy file="war/blocklyframe.html" toFile="${build.war.dir}/blocklyframe.html" overwrite="true">

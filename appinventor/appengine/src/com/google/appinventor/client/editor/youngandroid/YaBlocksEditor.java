@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright © 2009-2011 Google, All Rights reserved
+// Copyright © 2011-2016 Massachusetts Institute of Technology, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.client.editor.youngandroid;
@@ -22,7 +22,6 @@ import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
 import com.google.appinventor.client.explorer.project.ComponentDatabaseChangeListener;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
-import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
@@ -104,11 +103,11 @@ public final class YaBlocksEditor extends FileEditor
   // The form editor associated with this blocks editor
   private YaFormEditor myFormEditor;
 
-  // Used to determine if the newly generated yail should be sent to the debugging phone
-  private String lastYail = "";
-
   //Timer used to poll blocks editor to check if it is initialized
   private static Timer timer;
+
+  private boolean hasStartedInitializing = false;
+  private boolean isInitialized = false;
 
   private final List<ComponentDatabaseChangeListener> componentDatabaseChangeListeners = new ArrayList<ComponentDatabaseChangeListener>();
 
@@ -208,14 +207,32 @@ public final class YaBlocksEditor extends FileEditor
     showWhenInitialized();
   }
 
+  void onInitialized() {
+    isInitialized = true;
+    if (timer != null) {
+      timer.cancel();
+      timer = null;
+    }
+    showWhenInitialized();
+  }
+
+  private void startInitialization() {
+    if (hasStartedInitializing || isInitialized) {
+      return;
+    }
+    hasStartedInitializing = true;
+    blocksArea.callBlocklyInit(fullFormName);
+  }
+
   public void showWhenInitialized() {
     //check if blocks are initialized
-    if(BlocklyPanel.blocksInited(fullFormName)) {
+    if(isInitialized && BlocklyPanel.blocksInited(fullFormName)) {
       blocksArea.showDifferentForm(fullFormName);
       loadBlocksEditor();
       sendComponentData();  // Send Blockly the component information for generating Yail
       blocksArea.renderBlockly(); //Re-render Blockly due to firefox bug
     } else {
+      startInitialization();
       //timer calls this function again if the blocks are not initialized
       if(timer == null) {
         timer = new Timer() {

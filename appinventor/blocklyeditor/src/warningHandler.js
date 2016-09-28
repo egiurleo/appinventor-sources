@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2013-2014 MIT, All rights reserved
+// Copyright © 2013-2016 MIT, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 /**
@@ -12,7 +12,9 @@
 
 'use strict';
 
-goog.provide('Blockly.WarningHandler');
+goog.provide('AI.Blockly.WarningHandler');
+
+if (Blockly.WarningHandler === undefined) Blockly.WarningHandler = {};
 
 Blockly.WarningHandler.allBlockErrors = [{name:"checkReplErrors"}];
 Blockly.WarningHandler.allBlockWarnings = [{name:"checkBlockAtRoot"},{name:"checkEmptySockets"}];
@@ -29,7 +31,7 @@ Blockly.WarningHandler.warningState = {
 
 Blockly.WarningHandler.updateWarningErrorCount = function() {
   //update the error and warning count in the UI
-  Blockly.mainWorkspace.warningIndicator.updateWarningAndErrorCount();
+  Blockly.getMainWorkspace().getWarningIndicator().updateWarningAndErrorCount();
 }
 
 //Call to toggle the visibility of the warnings on the blocks
@@ -41,12 +43,12 @@ Blockly.WarningHandler.warningToggle = function() {
     Blockly.WarningHandler.showWarningsToggle = true;
     Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors(); // [lyn, 12/31/2013] Removed unnecessary false arg
   }
-  Blockly.mainWorkspace.warningIndicator.updateWarningToggleText();
+  Blockly.getMainWorkspace().getWarningIndicator().updateWarningToggleText();
 }
 
 //Hide warnings on the blocks
 Blockly.WarningHandler.hideWarnings = function() {
-  var blockArray = Blockly.mainWorkspace.getAllBlocks();
+  var blockArray = Blockly.getMainWorkspace().getAllBlocks();
   for(var i=0;i<blockArray.length;i++) {
     if(blockArray[i].warning) {
       blockArray[i].setWarningText(null);
@@ -59,8 +61,8 @@ Blockly.WarningHandler.cachedGlobalNames = [];
 
 Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors = function() {
   var start = new Date().getTime();
-  var topBlocks = Blockly.mainWorkspace.getTopBlocks();
-  var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+  var topBlocks = Blockly.getMainWorkspace().getTopBlocks();
+  var allBlocks = Blockly.getMainWorkspace().getAllBlocks();
   try {
     if (Blockly.Instrument.useLynCacheGlobalNames) {
       // Compute and cache the list of global names once only
@@ -154,7 +156,7 @@ Blockly.WarningHandler.checkErrors = function() {
   }
 
   //remove the error icon, if there is one
-  if(this.errorIcon) {
+  if(this.error) {
     this.setErrorIconText(null);
   }
   //If the block has an error,
@@ -202,11 +204,7 @@ Blockly.WarningHandler.checkIsInDefinition = function(){
   var rootBlock = this.getRootBlock();
   if(rootBlock.type == "global_declaration"){
     var errorMessage = Blockly.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION;
-    if(this.errorIcon){
-      this.errorIcon.setText(errorMessage);
-    } else {
-      this.setErrorIconText(errorMessage);
-    }
+    this.setErrorIconText(errorMessage);
     return true;
   } else {
     return false;
@@ -223,11 +221,7 @@ Blockly.WarningHandler.checkIfUndefinedBlock = function() {
       healStack = false; // unplug all blocks inside
     }
     this.isolate(healStack, true);
-    if(this.errorIcon){
-      this.errorIcon.setText(errorMessage);
-    } else {
-      this.setErrorIconText(errorMessage);
-    }
+    this.setErrorIconText(errorMessage);
     return true;
   } else {
     return false;
@@ -238,7 +232,7 @@ Blockly.WarningHandler.checkIfUndefinedBlock = function() {
 //Check if the block has an invalid drop down value, if so, create an error
 Blockly.WarningHandler.checkDropDownContainsValidValue = function(params){
   for(var i=0;i<params.dropDowns.length;i++){
-    var dropDown = this.getField_(params.dropDowns[i]);
+    var dropDown = this.getField(params.dropDowns[i]);
     var dropDownList = dropDown.menuGenerator_();
     var text = dropDown.text_;
     var textInDropDown = false;
@@ -250,12 +244,6 @@ Blockly.WarningHandler.checkDropDownContainsValidValue = function(params){
     }
     if(!textInDropDown) {
       var errorMessage = Blockly.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN;
-      // [lyn, 12/23/2013] setErrorIconText already does this test, so don't repeat it here
-//      if(this.errorIcon){
-//        this.errorIcon.setText(errorMessage);
-//      } else {
-//        this.setErrorIconText(errorMessage);
-//      }
       this.setErrorIconText(errorMessage);
       return true;
     }
@@ -274,11 +262,7 @@ Blockly.WarningHandler.checkComponentNotExistsError = function() {
   var component_names = Blockly.ComponentInstances.getInstanceNames();
   if (component_names.indexOf(this.instanceName) == -1) {
     var errorMessage = Blockly.ERROR_COMPONENT_DOES_NOT_EXIST;
-    if(this.errorIcon){
-      this.errorIcon.setText(errorMessage);
-    } else {
-      this.setErrorIconText(errorMessage);
-    }
+    this.setErrorIconText(errorMessage);
     return true;
   }
   return false;
@@ -303,7 +287,7 @@ Blockly.WarningHandler.checkComponentNotExistsError = function() {
 // quadratic, and based on empirical tests could significantly slow down error
 // checking for screens with lots (many dozens) of handlers.
 Blockly.WarningHandler.determineDuplicateComponentEventHandlers = function(){
-  var topBlocks = Blockly.mainWorkspace.getTopBlocks(false);
+  var topBlocks = Blockly.getMainWorkspace().getTopBlocks(false);
   var len = topBlocks.length;
   var eventHandlers = {}; // Object for storing event handler info
   for (var i = 0; i < len; i++) {
@@ -451,7 +435,7 @@ Blockly.WarningHandler.checkDisposedBlock = function(){
   if(this.warning) {
     this.setWarningText(null);
   }
-  if(this.errorIcon) {
+  if(this.error) {
     this.setErrorIconText(null);
   }
   if(this.hasWarning) {
@@ -485,11 +469,7 @@ Blockly.WarningHandler.checkEmptySockets = function(){
   if(containsEmptySockets) {
     if(Blockly.WarningHandler.showWarningsToggle) {
       var warningMessage = Blockly.Msg.MISSING_SOCKETS_WARNINGS;
-      if(this.warning){
-        this.warning.setText(warningMessage);
-      } else {
-        this.setWarningText(warningMessage);
-      }
+      this.setWarningText(warningMessage);
     }
     return true;
   } else {
@@ -504,11 +484,7 @@ Blockly.WarningHandler.checkBlockAtRoot = function(){
      this.type != "procedures_defnoreturn" && this.type != "procedures_defreturn"){
     if(Blockly.WarningHandler.showWarningsToggle) {
       var warningMessage = Blockly.Msg.WRONG_TYPE_BLOCK_WARINGS;
-      if(this.warning){
-        this.warning.setText(warningMessage);
-      } else {
-        this.setWarningText(warningMessage);
-      }
+      this.setWarningText(warningMessage);
     }
     return true;
   } else {

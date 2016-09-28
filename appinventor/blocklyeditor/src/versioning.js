@@ -1,5 +1,5 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2013-2014 MIT, All rights reserved
+// Copyright © 2013-2016 Massachusetts Institute of Technology, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 /**
@@ -8,6 +8,7 @@
  * Methods to handle converting apps from older versions to current
  *
  * @author wolber@usfca.edu (David Wolber)
+ * @author ewpatton@mit.edu (Evan W. Patton)
  *
  * [lyn, 2014/10/31] Completely overhauled blocks upgrading architecture.
  * All the work is done in Blockly.Version.upgrade.
@@ -20,12 +21,16 @@
 
 'use strict';
 
-goog.require('Blockly.Component');
-goog.require('Blockly.ComponentTypes');
+goog.provide('AI.Blockly.Versioning');
+
 goog.require('goog.dom');
 goog.require('goog.dom.xml');
 
-goog.provide('Blockly.Versioning');
+// App Inventor extensions to Blockly
+goog.require('AI.Blockly.Component');
+goog.require('AI.Blockly.ComponentTypes');
+
+if (Blockly.Versioning === undefined) Blockly.Versioning = {};
 
 Blockly.Versioning.loggingFlag = true;
 
@@ -245,7 +250,7 @@ Blockly.Versioning.ensureWorkspace = function (blocksRep) {
   } else if (Blockly.Versioning.isDom(blocksRep)) {
     Blockly.Versioning.log("Blockly.Versioning.ensureWorkspace: converting dom to Blockly.mainWorkspace");
     Blockly.mainWorkspace.clear(); // Remove any existing blocks before we add new ones.
-    Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, blocksRep);
+    Blockly.Xml.domToWorkspace(blocksRep, Blockly.mainWorkspace);
     return Blockly.mainWorkspace;
   } else {
     throw "Blockly.Versioning.ensureWorkspace: blocksRep is neither workspace nor dom -- " + blocksRep;

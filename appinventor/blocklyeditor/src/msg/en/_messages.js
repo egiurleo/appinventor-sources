@@ -1,11 +1,11 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
+// Copyright © 2012-2016 Massachusetts Institute of Technology. All rights reserved.
 
 /**
  * Visual Blocks Language
  *
- * Copyright 2012 Google Inc.
- * http://blockly.googlecode.com/
+ * Copyright © 2012 Google Inc.
+ * Copyright © 2012-2016 Massachusetts Institute of Technology
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,9 @@ Blockly.Msg.en.switch_language_to_english = {
   helpUrl: '',
   init: function() {
 // Context menus.
+    Blockly.Msg.UNDO = 'Undo';
+    Blockly.Msg.REDO = 'Redo';
+    Blockly.Msg.CLEAN_UP = 'Clean up Blocks';
     Blockly.Msg.DUPLICATE_BLOCK = 'Duplicate';
     Blockly.Msg.REMOVE_COMMENT = 'Remove Comment';
     Blockly.Msg.ADD_COMMENT = 'Add Comment';
@@ -46,6 +49,7 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.INLINE_INPUTS = 'Inline Inputs';
     Blockly.Msg.HORIZONTAL_PARAMETERS = 'Arrange Parameters Horizontally';
     Blockly.Msg.VERTICAL_PARAMETERS = 'Arrange Parameters Vertically';
+    Blockly.Msg.DELETE_ALL_BLOCKS = "Delete all %1 blocks?";
     Blockly.Msg.DELETE_BLOCK = 'Delete Block';
     Blockly.Msg.DELETE_X_BLOCKS = 'Delete %1 Blocks';
     Blockly.Msg.COLLAPSE_BLOCK = 'Collapse Block';

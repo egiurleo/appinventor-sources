@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
-// Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright © 2009-2011 Google, All Rights reserved
+// Copyright © 2011-2016 Massachusetts Institute of Technology, All rights reserved
 // Released under the Apache License, Version 2.0
 // http://www.apache.org/licenses/LICENSE-2.0
 
@@ -910,6 +910,13 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
                           // the iframe finishes loading
   }-*/;
 
+  native void callBlocklyInit(String formName) /*-{
+    var editor = this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::myBlocksEditor;
+    $wnd.Blocklies[formName].init($entry(function() {
+      editor.@com.google.appinventor.client.editor.youngandroid.YaBlocksEditor::onInitialized()();
+    }));
+  }-*/;
+
   private static native void doAddComponent(String formName, String typeDescription,
                                             String instanceName, String uid) /*-{
     $wnd.Blocklies[formName].Component.add(instanceName, uid);
@@ -926,31 +933,31 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
   }-*/;
 
   private static native void doShowComponentBlocks(String formName, String name) /*-{
-    $wnd.Blocklies[formName].Drawer.showComponent(name);
+    $wnd.Blocklies[formName].getMainWorkspace().drawer_.showComponent(name);
   }-*/;
 
   public static native void doHideComponentBlocks(String formName) /*-{
-    $wnd.Blocklies[formName].Drawer.hide();
+    $wnd.Blocklies[formName].getMainWorkspace().drawer_.hide();
   }-*/;
 
   private static native void doShowBuiltinBlocks(String formName, String drawerName) /*-{
     var myBlockly = $wnd.Blocklies[formName];
-    myBlockly.Drawer.hide();
-    myBlockly.Drawer.showBuiltin(drawerName);
+    myBlockly.getMainWorkspace().drawer_.hide();
+    myBlockly.getMainWorkspace().drawer_.showBuiltin(drawerName);
   }-*/;
 
   public static native void doHideBlocks(String formName) /*-{
-    $wnd.Blocklies[formName].Drawer.hide();
+    $wnd.Blocklies[formName].getMainWorkspace().drawer_.hide();
   }-*/;
 
   private static native void doShowGenericBlocks(String formName, String drawerName) /*-{
     var myBlockly = $wnd.Blocklies[formName];
-    myBlockly.Drawer.hide();
-    myBlockly.Drawer.showGeneric(drawerName);
+    myBlockly.getMainWorkspace().drawer_.hide();
+    myBlockly.getMainWorkspace().drawer_.showGeneric(drawerName);
   }-*/;
 
   public static native boolean doDrawerShowing(String formName) /*-{
-    return $wnd.Blocklies[formName].Drawer.isShowing();
+    return $wnd.Blocklies[formName].getMainWorkspace().drawer_.isShowing();
   }-*/;
 
   // [lyn, 2014/10/27] added formJson for upgrading
