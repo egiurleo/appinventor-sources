@@ -11,6 +11,7 @@ import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.boxes.Box;
+import com.google.gwt.aria.client.Roles;
 import com.google.common.collect.Maps;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.HTML;
@@ -103,6 +104,9 @@ public final class BlockSelectorBox extends Box {
     setContent(sourceStructureExplorer);
     setVisible(false);
     drawerListeners = new ArrayList<BlockDrawerSelectionListener>();
+
+    Roles.getMenuRole().set(getElement());
+    Roles.getMenuRole().setTabindexExtraAttribute(getElement(), 0);
   }
 
   private static void initBundledImages() {

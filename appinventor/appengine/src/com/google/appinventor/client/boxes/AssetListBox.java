@@ -9,6 +9,7 @@ package com.google.appinventor.client.boxes;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.explorer.youngandroid.AssetList;
 import com.google.appinventor.client.widgets.boxes.Box;
+import com.google.gwt.aria.client.Roles;
 
 /**
  * Box implementation for asset list.
@@ -41,6 +42,9 @@ public final class AssetListBox extends Box {
 
     alist = new AssetList();
     setContent(alist);
+
+    Roles.getTreeRole().set(getElement());
+    Roles.getTreeRole().setTabindexExtraAttribute(getElement(), 0);
   }
 
   /**
