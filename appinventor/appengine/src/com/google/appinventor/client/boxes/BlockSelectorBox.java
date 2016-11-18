@@ -100,13 +100,14 @@ public final class BlockSelectorBox extends Box {
         false); // removable
 
     sourceStructureExplorer = new SourceStructureExplorer();
+    sourceStructureExplorer.getElement().setTabIndex(-1);
 
     setContent(sourceStructureExplorer);
     setVisible(false);
     drawerListeners = new ArrayList<BlockDrawerSelectionListener>();
 
-    Roles.getMenuRole().set(getElement());
-    Roles.getMenuRole().setTabindexExtraAttribute(getElement(), 0);
+    Roles.getTreeRole().set(getElement());
+    Roles.getTreeRole().setTabindexExtraAttribute(getElement(), 0);
   }
 
   private static void initBundledImages() {

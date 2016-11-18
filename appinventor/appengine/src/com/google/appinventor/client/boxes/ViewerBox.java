@@ -41,8 +41,8 @@ public class ViewerBox extends Box {
         false,  // minimizable
         false); // removable
 
-    Roles.getMenuRole().set(getElement());
-    Roles.getMenuRole().setTabindexExtraAttribute(getElement(), 0);
+    Roles.getTreeRole().set(getElement());
+    Roles.getTreeRole().setTabindexExtraAttribute(getElement(), 0);
   }
 
   /**

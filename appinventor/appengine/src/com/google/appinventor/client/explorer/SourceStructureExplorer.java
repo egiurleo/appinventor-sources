@@ -118,6 +118,7 @@ public class SourceStructureExplorer extends Composite {
         }
       }
     });
+    renameButton.getElement().setTabIndex(-1);
     buttonPanel.add(renameButton);
     buttonPanel.setCellHorizontalAlignment(renameButton, HorizontalPanel.ALIGN_RIGHT);
 
@@ -129,6 +130,7 @@ public class SourceStructureExplorer extends Composite {
         deleteItemFromTree();
       }
     });
+    deleteButton.getElement().setTabIndex(-1);
     buttonPanel.add(deleteButton);
     buttonPanel.setCellHorizontalAlignment(deleteButton, HorizontalPanel.ALIGN_LEFT);
 
@@ -161,12 +163,12 @@ public class SourceStructureExplorer extends Composite {
     deleteButton.setEnabled(false);
   }
 
-  
+
   /* move this logic to declarations of SourceStructureExplorerItem subtypes
   private void showBlocks(SourceStructureExplorerItem item) {
     // are we showing the blocks editor?
     if (Ode.getInstance().getCurrentFileEditor() instanceof YaBlocksEditor) {
-      YaBlocksEditor editor = 
+      YaBlocksEditor editor =
           (YaBlocksEditor) Ode.getInstance().getCurrentFileEditor();
       OdeLog.log("Showing item " + item.getItemName());
       if (item.isComponent()) {
@@ -183,9 +185,9 @@ public class SourceStructureExplorer extends Composite {
           (YaBlocksEditor) Ode.getInstance().getCurrentFileEditor();
       OdeLog.log("Hiding selected item");
       editor.hideComponentBlocks();
-    }  
+    }
   }
-   */  
+   */
 
   /**
    * Clears the tree.
@@ -207,7 +209,7 @@ public class SourceStructureExplorer extends Composite {
     updateTree(items, itemToSelect);
   }
 
-  
+
   /**
    * Updates the tree
    *
