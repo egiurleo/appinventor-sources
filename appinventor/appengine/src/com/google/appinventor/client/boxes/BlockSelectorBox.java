@@ -100,8 +100,6 @@ public final class BlockSelectorBox extends Box {
         false); // removable
 
     sourceStructureExplorer = new SourceStructureExplorer();
-    sourceStructureExplorer.getElement().setTabIndex(-1);
-
     setContent(sourceStructureExplorer);
     setVisible(false);
     drawerListeners = new ArrayList<BlockDrawerSelectionListener>();

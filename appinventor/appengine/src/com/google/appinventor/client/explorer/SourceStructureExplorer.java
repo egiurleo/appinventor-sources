@@ -37,6 +37,7 @@ public class SourceStructureExplorer extends Composite {
     // Initialize UI elements
     tree = new Tree(Ode.getImageBundle());
     tree.setAnimationEnabled(true);
+    tree.setTabIndex(-1);
     tree.addCloseHandler(new CloseHandler<TreeItem>() {
       @Override
       public void onClose(CloseEvent<TreeItem> event) {
@@ -118,7 +119,7 @@ public class SourceStructureExplorer extends Composite {
         }
       }
     });
-    renameButton.getElement().setTabIndex(-1);
+    renameButton.setTabIndex(-3);
     buttonPanel.add(renameButton);
     buttonPanel.setCellHorizontalAlignment(renameButton, HorizontalPanel.ALIGN_RIGHT);
 
@@ -130,7 +131,7 @@ public class SourceStructureExplorer extends Composite {
         deleteItemFromTree();
       }
     });
-    deleteButton.getElement().setTabIndex(-1);
+    deleteButton.setTabIndex(-2);
     buttonPanel.add(deleteButton);
     buttonPanel.setCellHorizontalAlignment(deleteButton, HorizontalPanel.ALIGN_LEFT);
 
