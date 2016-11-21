@@ -15,7 +15,6 @@ import com.google.gwt.aria.client.Id;
 import com.google.gwt.aria.client.Roles;
 import com.google.common.collect.Maps;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.TreeItem;
@@ -108,6 +107,7 @@ public final class BlockSelectorBox extends Box {
 
     Roles.getTreeRole().set(getElement());
     Roles.getTreeRole().setTabindexExtraAttribute(getElement(), 0);
+    Roles.getTreeRole().setAriaActivedescendantProperty(getElement(), Id.of("source-structure-explorer-tree"));
   }
 
   private static void initBundledImages() {
