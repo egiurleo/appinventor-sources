@@ -14,6 +14,7 @@ import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.gwt.aria.client.Id;
 import com.google.gwt.aria.client.Roles;
 import com.google.common.collect.Maps;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
@@ -104,6 +105,17 @@ public final class BlockSelectorBox extends Box {
     setContent(sourceStructureExplorer);
     setVisible(false);
     drawerListeners = new ArrayList<BlockDrawerSelectionListener>();
+
+    this.addKeyDownHandler(new KeyDownHandler() {
+      @Override
+      public void onKeyDown(KeyDownEvent event) {
+        int keyCode = event.getNativeKeyCode();
+        if(keyCode == KeyCodes.KEY_DOWN) {
+          event.preventDefault();
+          sourceStructureExplorer.setFocus(true);
+        }
+      }
+    });
 
     Roles.getTreeRole().set(getElement());
     Roles.getTreeRole().setTabindexExtraAttribute(getElement(), 0);

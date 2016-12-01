@@ -36,7 +36,7 @@ public class SourceStructureExplorer extends Composite {
   public SourceStructureExplorer() {
     // Initialize UI elements
     tree = new Tree(Ode.getImageBundle());
-    tree.getElementsetId("source-structure-explorer-tree");
+    tree.getElement().setId("source-structure-explorer-tree");
     tree.setAnimationEnabled(true);
     tree.setTabIndex(-1); //remove this tree from the tab flow
     tree.addCloseHandler(new CloseHandler<TreeItem>() {
@@ -228,6 +228,10 @@ public class SourceStructureExplorer extends Composite {
     } else {
       disableButtons();
     }
+  }
+
+  public void setFocus(boolean bool) {
+    tree.setFocus(bool);
   }
 
   /**
