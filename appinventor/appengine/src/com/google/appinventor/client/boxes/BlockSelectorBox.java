@@ -113,6 +113,9 @@ public final class BlockSelectorBox extends Box {
         if(keyCode == KeyCodes.KEY_DOWN) {
           event.preventDefault();
           sourceStructureExplorer.setFocus(true);
+        } elseif(keyCode == KeyCodes.SPACE) { //TODO: choose the actual key
+          event.preventDefault();
+          fireFirstBlockInDrawerSelected();
         }
       }
     });
@@ -245,6 +248,12 @@ public final class BlockSelectorBox extends Box {
   private void fireGenericDrawerSelected(String drawerName) {
     for (BlockDrawerSelectionListener listener : drawerListeners) {
       listener.onGenericDrawerSelected(drawerName);
+    }
+  }
+
+  private void fireFirstBlockInDrawerSelected() {
+    for (BlockDrawerSelectionListener listener : drawerListeners) {
+      listener.onFirstBlockInDrawerSelected();
     }
   }
 

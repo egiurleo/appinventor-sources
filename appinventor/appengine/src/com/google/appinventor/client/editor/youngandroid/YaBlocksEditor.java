@@ -479,6 +479,10 @@ public final class YaBlocksEditor extends FileEditor
     blocksArea.hideBuiltinBlocks();
   }
 
+  public void selectFirstBlockInDrawer() {
+    blocksArea.selectFirstBlockInDrawer();
+  }
+
   public MockForm getForm() {
     YaProjectEditor yaProjectEditor = (YaProjectEditor) projectEditor;
     YaFormEditor myFormEditor = yaProjectEditor.getFormFileEditor(blocksNode.getFormName());
