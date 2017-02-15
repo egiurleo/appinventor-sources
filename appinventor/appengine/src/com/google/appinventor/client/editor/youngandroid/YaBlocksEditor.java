@@ -603,6 +603,18 @@ public final class YaBlocksEditor extends FileEditor
   }
 
   /*
+   * @see com.google.appinventor.client.editor.youngandroid.BlockDrawerSelectionListener#
+   * onFirstBlockInDrawerSelected()
+   */
+  @Override
+  public void onFirstBlockInDrawerSelected() {
+    // Only do something if we are the current file editor
+    if (Ode.getInstance().getCurrentFileEditor() == this) {
+      selectFirstBlockInDrawer();
+    }
+  }
+
+  /*
    * Start up the Repl (call into the Blockly.ReplMgr via the BlocklyPanel.
    */
   @Override

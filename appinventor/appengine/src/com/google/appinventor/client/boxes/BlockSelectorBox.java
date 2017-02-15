@@ -113,7 +113,7 @@ public final class BlockSelectorBox extends Box {
         if(keyCode == KeyCodes.KEY_DOWN) {
           event.preventDefault();
           sourceStructureExplorer.setFocus(true);
-        } elseif(keyCode == KeyCodes.SPACE) { //TODO: choose the actual key
+        } else if(keyCode == KeyCodes.KEY_SPACE) { //TODO: choose the actual key
           event.preventDefault();
           fireFirstBlockInDrawerSelected();
         }
