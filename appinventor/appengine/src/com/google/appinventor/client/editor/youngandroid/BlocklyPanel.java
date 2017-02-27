@@ -444,6 +444,15 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     }
   }
 
+  /**
+   * Add the selected block to the workspace
+   */
+  public void addSelectedBlockToWorkspace() {
+    if(blocksInited(formName)) {
+      doAddSelectedBlockToWorkspace(formName);
+    }
+  }
+
   public void renderBlockly() {
     if (blocksInited(formName)) {
       doRenderBlockly(formName);
@@ -967,6 +976,14 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
 
   private static native void doSelectFirstBlock(String formName) /*-{
     $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_.svgList[0].addSelect();
+    $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_.selectedBlock = 0;
+  }-*/;
+
+  private static native void doAddSelectedBlockToWorkspace(String formName) /*-{
+    var flyout = $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_;
+    if(flyout.selectedBlock != -1) {
+      flyout.placeNewBlock_(flyout.svgList[flyout.selectedBlock]);
+    }
   }-*/;
 
   public static native boolean doDrawerShowing(String formName) /*-{

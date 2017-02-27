@@ -483,6 +483,10 @@ public final class YaBlocksEditor extends FileEditor
     blocksArea.selectFirstBlockInDrawer();
   }
 
+  public void addSelectedBlockToWorkspace() {
+    blocksArea.addSelectedBlockToWorkspace();
+  }
+
   public MockForm getForm() {
     YaProjectEditor yaProjectEditor = (YaProjectEditor) projectEditor;
     YaFormEditor myFormEditor = yaProjectEditor.getFormFileEditor(blocksNode.getFormName());
@@ -611,6 +615,18 @@ public final class YaBlocksEditor extends FileEditor
     // Only do something if we are the current file editor
     if (Ode.getInstance().getCurrentFileEditor() == this) {
       selectFirstBlockInDrawer();
+    }
+  }
+
+  /*
+   * @see com.google.appinventor.client.editor.youngandroid.BlockDrawerSelectionListener#
+   * onSelectedBlockAddedToWorkspace()
+   */
+  @Override
+  public void onSelectedBlockAddedToWorkspace() {
+    // Only do something if we are the current file editor
+    if (Ode.getInstance().getCurrentFileEditor() == this) {
+      addSelectedBlockToWorkspace();
     }
   }
 

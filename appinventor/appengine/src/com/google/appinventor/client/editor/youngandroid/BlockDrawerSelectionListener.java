@@ -16,4 +16,6 @@ public interface BlockDrawerSelectionListener {
   void onGenericDrawerSelected(String drawerName);
 
   void onFirstBlockInDrawerSelected();
+
+  void onSelectedBlockAddedToWorkspace();
 }
