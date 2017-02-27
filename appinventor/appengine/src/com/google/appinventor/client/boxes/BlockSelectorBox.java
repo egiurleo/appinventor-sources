@@ -119,6 +119,9 @@ public final class BlockSelectorBox extends Box {
         } else if(keyCode == KeyCodes.KEY_ENTER) {
           event.preventDefault();
           fireAddSelectedBlockToWorkspace();
+        } else if(keyCode == KeyCodes.KEY_S) {
+          event.preventDefault();
+          fireNextBlockInDrawer();
         }
       }
     });
@@ -257,6 +260,12 @@ public final class BlockSelectorBox extends Box {
   private void fireFirstBlockInDrawerSelected() {
     for (BlockDrawerSelectionListener listener : drawerListeners) {
       listener.onFirstBlockInDrawerSelected();
+    }
+  }
+
+  private void fireNextBlockInDrawer() {
+    for (BlockDrawerSelectionListener listener : drawerListeners) {
+      listener.onSelectNextBlockInDrawer();
     }
   }
 

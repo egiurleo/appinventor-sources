@@ -438,9 +438,15 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
   /**
    * Select the first block in the drawer
    */
-  public void selectFirstBlockInDrawer() {
+  public void selectBlockInDrawer(int blockNumber) {
     if(blocksInited(formName)) {
-      doSelectFirstBlock(formName);
+      doSelectBlock(formName, blockNumber);
+    }
+  }
+
+  public void selectNextBlockInDrawer() {
+    if(blocksInited(formName)) {
+      doSelectNextBlock(formName);
     }
   }
 
@@ -956,6 +962,7 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
 
   public static native void doHideComponentBlocks(String formName) /*-{
     $wnd.Blocklies[formName].getMainWorkspace().drawer_.hide();
+    $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_.selectedBlock = -1;
   }-*/;
 
   private static native void doShowBuiltinBlocks(String formName, String drawerName) /*-{
@@ -966,6 +973,7 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
 
   public static native void doHideBlocks(String formName) /*-{
     $wnd.Blocklies[formName].getMainWorkspace().drawer_.hide();
+    $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_.selectedBlock = -1;
   }-*/;
 
   private static native void doShowGenericBlocks(String formName, String drawerName) /*-{
@@ -974,10 +982,28 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     myBlockly.getMainWorkspace().drawer_.showGeneric(drawerName);
   }-*/;
 
-  private static native void doSelectFirstBlock(String formName) /*-{
-    $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_.svgList[0].addSelect();
-    $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_.selectedBlock = 0;
+  private static native void doSelectBlock(String formName, int blockNumber) /*-{
+    $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_.svgList[blockNumber].addSelect();
+    $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_.selectedBlock = blockNumber;
   }-*/;
+
+  private static native void doSelectNextBlock(String formName) /*-{
+    var flyout = $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_;
+
+    if(flyout.selectedBlock != -1) {
+      flyout.svgList[flyout.selectedBlock].removeSelect();
+
+      var newBlockNumber = 0;
+      if(flyout.selectedBlock != flyout.svgList.length - 1) { // if it's the last block, select the first
+        newBlockNumber = flyout.selectedBlock + 1;
+      }
+
+      flyout.svgList[newBlockNumber].addSelect();
+      flyout.selectedBlock = newBlockNumber;
+    }
+  }-*/;
+
+  // private static native void doSelectPreviousBlock(String formName)
 
   private static native void doAddSelectedBlockToWorkspace(String formName) /*-{
     var flyout = $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_;
