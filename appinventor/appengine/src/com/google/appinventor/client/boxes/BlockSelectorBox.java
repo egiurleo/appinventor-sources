@@ -20,6 +20,8 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.TreeItem;
 
+import com.google.gwt.user.client.Window; //TODO: @egiurleo remove this
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -175,6 +177,16 @@ public final class BlockSelectorBox extends Box {
       };
       itemNode.setUserObject(sourceItem);
       builtinNode.addItem(itemNode);
+
+      this.addKeyDownHandler(new KeyDownHandler() {
+        @Override
+        public void onKeyDown(KeyDownEvent event) {
+          int keyCode = event.getNativeKeyCode();
+          if(keyCode == KeyCodes.KEY_ESCAPE || keyCode == KeyCodes.KEY_TAB) {
+            fireBuiltinDrawerClosed(drawerName);
+          }
+        }
+      });
     }
     builtinNode.setState(true);
     return builtinNode;
@@ -251,6 +263,12 @@ public final class BlockSelectorBox extends Box {
   private void fireBuiltinDrawerSelected(String drawerName) {
     for (BlockDrawerSelectionListener listener : drawerListeners) {
       listener.onBuiltinDrawerSelected(drawerName);
+    }
+  }
+
+  private void fireBuiltinDrawerClosed(String drawerName) {
+    for (BlockDrawerSelectionListener listener : drawerListeners) {
+      listener.onBuiltinDrawerClosed(drawerName);
     }
   }
 
