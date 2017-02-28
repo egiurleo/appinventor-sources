@@ -450,7 +450,7 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     }
   }
 
-  public void selectPrevoiusBlockInDrawer() {
+  public void selectPreviousBlockInDrawer() {
     if(blocksInited(formName)) {
       doSelectPreviousBlock(formName);
     }
