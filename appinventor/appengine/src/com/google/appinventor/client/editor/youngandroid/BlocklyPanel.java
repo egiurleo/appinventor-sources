@@ -450,6 +450,12 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     }
   }
 
+  public void selectPrevoiusBlockInDrawer() {
+    if(blocksInited(formName)) {
+      doSelectPreviousBlock(formName);
+    }
+  }
+
   /**
    * Add the selected block to the workspace
    */
@@ -1003,7 +1009,21 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     }
   }-*/;
 
-  // private static native void doSelectPreviousBlock(String formName)
+  private static native void doSelectPreviousBlock(String formName) /*-{
+    var flyout = $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_;
+
+    if(flyout.selectedBlock != -1) {
+      flyout.svgList[flyout.selectedBlock].removeSelect();
+
+      var newBlockNumber = flyout.svgList.length - 1;
+      if(flyout.selectedBlock != 0) { // if it's the first block, select the last
+        newBlockNumber = flyout.selectedBlock - 1;
+      }
+
+      flyout.svgList[newBlockNumber].addSelect();
+      flyout.selectedBlock = newBlockNumber;
+    }
+  }-*/;
 
   private static native void doAddSelectedBlockToWorkspace(String formName) /*-{
     var flyout = $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_;

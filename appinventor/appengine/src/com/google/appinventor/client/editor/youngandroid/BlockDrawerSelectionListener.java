@@ -19,5 +19,7 @@ public interface BlockDrawerSelectionListener {
 
   void onSelectNextBlockInDrawer();
 
+  void onSelectPreviousBlockInDrawer();
+
   void onSelectedBlockAddedToWorkspace();
 }

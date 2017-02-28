@@ -113,7 +113,7 @@ public final class BlockSelectorBox extends Box {
         if(keyCode == KeyCodes.KEY_DOWN) {
           event.preventDefault();
           sourceStructureExplorer.setFocus(true);
-        } else if(keyCode == KeyCodes.KEY_SPACE) { //TODO: choose the actual key
+        } else if(keyCode == KeyCodes.KEY_D) { //TODO: choose the actual key
           event.preventDefault();
           fireFirstBlockInDrawerSelected();
         } else if(keyCode == KeyCodes.KEY_ENTER) {
@@ -121,7 +121,10 @@ public final class BlockSelectorBox extends Box {
           fireAddSelectedBlockToWorkspace();
         } else if(keyCode == KeyCodes.KEY_S) {
           event.preventDefault();
-          fireNextBlockInDrawer();
+          fireNextBlockInDrawerSelected();
+        } else if(keyCode == KeyCodes.KEY_W) {
+          event.preventDefault();
+          firePreviousBlockInDrawerSelected();
         }
       }
     });
@@ -263,9 +266,15 @@ public final class BlockSelectorBox extends Box {
     }
   }
 
-  private void fireNextBlockInDrawer() {
+  private void fireNextBlockInDrawerSelected() {
     for (BlockDrawerSelectionListener listener : drawerListeners) {
       listener.onSelectNextBlockInDrawer();
+    }
+  }
+
+  private void firePreviousBlockInDrawerSelected() {
+    for (BlockDrawerSelectionListener listener : drawerListeners) {
+      listener.onSelectPreviousBlockInDrawer();
     }
   }
 
