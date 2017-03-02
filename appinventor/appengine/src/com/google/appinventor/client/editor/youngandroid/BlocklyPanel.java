@@ -813,6 +813,10 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     doSwitchLanguage(formName, languageSetting);
   }
 
+  public void selectFirstBlockInWorkspace() {
+    Window.alert("here");
+  }
+
   /**
    * Trigger and Update of the Companion if the Companion is connected
    * and an update is available. Note: We do not compare the currently

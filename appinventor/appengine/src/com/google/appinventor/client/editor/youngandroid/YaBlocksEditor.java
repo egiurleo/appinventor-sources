@@ -35,6 +35,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.TreeItem;
+import com.google.appinventor.client.boxes.ViewerBox;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -135,6 +136,9 @@ public final class YaBlocksEditor extends FileEditor
     });
     initWidget(blocksArea);
     addComponentDatabaseChangeListener(blocksArea);
+
+    // Connect blocks area to Viewer box
+    ViewerBox.getViewerBox().connectBlocksArea(blocksArea);
 
     // Get references to the source structure explorer
     sourceStructureExplorer = BlockSelectorBox.getBlockSelectorBox().getSourceStructureExplorer();

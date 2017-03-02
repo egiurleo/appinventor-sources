@@ -14,6 +14,10 @@ import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.gwt.aria.client.Roles;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.event.dom.client.*;
+
+import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
+
 
 /**
  * Implementation for a box that can hold multiple viewers (including editors).
@@ -22,6 +26,7 @@ import com.google.gwt.user.client.Window;
 public class ViewerBox extends Box {
   // Singleton viewer box instance
   private static final ViewerBox INSTANCE = new ViewerBox();
+  private BlocklyPanel blocksArea;
 
   /**
    * Return the singleton viewer box.
@@ -46,6 +51,24 @@ public class ViewerBox extends Box {
   }
 
   /**
+   * Let the ViewerBox know about the blocks area to enable keyboard interactions between gwt and blockly
+   */
+  public void connectBlocksArea(BlocklyPanel blocksPanel) {
+    blocksArea = blocksPanel;
+
+    this.addKeyDownHandler(new KeyDownHandler() {
+      @Override
+      public void onKeyDown(KeyDownEvent event) {
+        int keyCode = event.getNativeKeyCode();
+        if(keyCode == KeyCodes.KEY_DOWN) {
+          event.preventDefault();
+          blocksArea.selectFirstBlockInWorkspace();
+        }
+      }
+    });
+  }
+
+  /**
    * Shows the content associated with the given project in the viewer.
    *
    * @param projectRootNode  the root node of the project to show in the viewer
@@ -55,6 +78,7 @@ public class ViewerBox extends Box {
     OdeLog.log("ViewerBox: switching the content in the viewer box");
     setContent(projectEditor);
     Ode.getInstance().switchToDesignView();
+
     return projectEditor;
   }
 }
