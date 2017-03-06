@@ -15,5 +15,6 @@ goog.require('goog.events.KeyHandler');
 goog.require('goog.window');
 
 Blockly.Keyboard.selectFirstBlock = function() {
-  var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+  var allBlocks = Blockly.mainWorkspace.getTopBlocks();
+  // TODO: select first block
 }
