@@ -465,6 +465,13 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     }
   }
 
+  /**
+   * Select a block in the workspace as a part of keyboard interface
+   */
+  public void selectFirstBlockInWorkspace() {
+    doSelectFirstBlockInWorkspace(formName);
+  }
+
   public void renderBlockly() {
     if (blocksInited(formName)) {
       doRenderBlockly(formName);
@@ -813,10 +820,6 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     doSwitchLanguage(formName, languageSetting);
   }
 
-  public void selectFirstBlockInWorkspace() {
-    Window.alert("here");
-  }
-
   /**
    * Trigger and Update of the Companion if the Companion is connected
    * and an update is available. Note: We do not compare the currently
@@ -1034,6 +1037,10 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     if(flyout.selectedBlock != -1) {
       flyout.placeNewBlock_(flyout.svgList[flyout.selectedBlock]);
     }
+  }-*/;
+
+  private static native void doSelectFirstBlockInWorkspace(String formName) /*-{
+    $wnd.Blocklies[formName].Keyboard.selectFirstBlock();
   }-*/;
 
   public static native boolean doDrawerShowing(String formName) /*-{
