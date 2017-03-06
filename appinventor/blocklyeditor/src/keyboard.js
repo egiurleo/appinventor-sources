@@ -15,5 +15,5 @@ goog.require('goog.events.KeyHandler');
 goog.require('goog.window');
 
 Blockly.Keyboard.selectFirstBlock = function() {
-  alert("in keyboard file!");
+  var allBlocks = Blockly.mainWorkspace.getAllBlocks();
 }
