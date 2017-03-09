@@ -466,10 +466,10 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
   }
 
   /**
-   * Select a block in the workspace as a part of keyboard interface
+   * Pass on a keycode to the Blockly workspace for keyboard interactions
    */
-  public void selectFirstBlockInWorkspace() {
-    doSelectFirstBlockInWorkspace(formName);
+  public void workspaceKeyboardInteractions(int keyCode) {
+    doWorkspaceKeyboardInteractions(formName, keyCode);
   }
 
   public void renderBlockly() {
@@ -1039,8 +1039,8 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     }
   }-*/;
 
-  private static native void doSelectFirstBlockInWorkspace(String formName) /*-{
-    $wnd.Blocklies[formName].Keyboard.selectFirstBlock();
+  private static native void doWorkspaceKeyboardInteractions(String formName, int keyCode) /*-{
+    $wnd.Blocklies[formName].Keyboard.workspaceKeyboardInteraction(keyCode);
   }-*/;
 
   public static native boolean doDrawerShowing(String formName) /*-{

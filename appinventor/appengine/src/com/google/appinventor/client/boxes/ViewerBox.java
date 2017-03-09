@@ -60,10 +60,8 @@ public class ViewerBox extends Box {
       @Override
       public void onKeyDown(KeyDownEvent event) {
         int keyCode = event.getNativeKeyCode();
-        if(keyCode == KeyCodes.KEY_DOWN) {
-          event.preventDefault();
-          blocksArea.selectFirstBlockInWorkspace();
-        }
+        event.preventDefault();
+        blocksArea.workspaceKeyboardInteractions(keyCode);
       }
     });
   }
