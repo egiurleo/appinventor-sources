@@ -28,41 +28,65 @@ Blockly.Keyboard.workspaceKeyboardInteraction = function(keyCode) {
 
   if(keyCode == keyCodes.DOWN) {
     if(Blockly.selected) { // if there is a selected block on the workspace
-      //DO SOMETHING
+      Blockly.Keyboard.selectFirstBlockInNextLevel();
     } else {
       this.selectFirstBlockInWorkspace();
     }
   } else if(keyCode == keyCodes.UP) {
-
+    Blockly.Keyboard.selectFirstBlockInPreviousLevel();
   } else if(keyCode == keyCodes.RIGHT) {
     Blockly.Keyboard.selectNextBlockInLevel();
   } else if(keyCode == keyCodes.LEFT) {
-
+    Blockly.Keyboard.selectPreviousBlockInLevel();
   }
 }
 
 Blockly.Keyboard.selectFirstBlockInWorkspace = function() {
   Blockly.Keyboard.currentBlocksLevel = Blockly.mainWorkspace.getTopBlocks();
   Blockly.Keyboard.currentBlocksIndex = 0;
-  Blockly.Keyboard.currentBlocksLevel[Blockly.Keyboard.currentBlocksIndex].select();
+  Blockly.Keyboard.selectCurrentBlock();
 }
 
 Blockly.Keyboard.selectNextBlockInLevel = function() {
   Blockly.Keyboard.unselectSelectedBlock();
   Blockly.Keyboard.currentBlocksIndex = Blockly.Keyboard.wrapIncrement(Blockly.Keyboard.currentBlocksLevel, Blockly.Keyboard.currentBlocksIndex);
-  Blockly.Keyboard.currentBlocksLevel[Blockly.Keyboard.currentBlocksIndex].select();
+  Blockly.Keyboard.selectCurrentBlock();
 }
 
 Blockly.Keyboard.selectPreviousBlockInLevel = function() {
   Blockly.Keyboard.unselectSelectedBlock();
+  Blockly.Keyboard.currentBlocksIndex = Blockly.Keyboard.wrapDecrement(Blockly.Keyboard.currentBlocksLevel, Blockly.Keyboard.currentBlocksIndex);
+  Blockly.Keyboard.selectCurrentBlock();
 }
 
 Blockly.Keyboard.selectFirstBlockInNextLevel = function() {
-  //TODO: go down a level in hierarchy
+  var childBlocks = Blockly.Keyboard.currentBlocksLevel[Blockly.Keyboard.currentBlocksIndex].childBlocks_;
+
+  if(childBlocks.length > 0) {
+    Blockly.Keyboard.unselectSelectedBlock();
+    Blockly.Keyboard.currentBlocksLevel = Blockly.Keyboard.currentBlocksLevel[Blockly.Keyboard.currentBlocksIndex].childBlocks_;
+    Blockly.Keyboard.currentBlocksIndex = 0;
+    Blockly.Keyboard.selectCurrentBlock();
+  }
 }
 
 Blockly.Keyboard.selectFirstBlockInPreviousLevel = function() {
-  //TODO: go up a level in hierarchy
+  Blockly.Keyboard.unselectSelectedBlock();
+
+  // the block is at least one level down
+  if(Blockly.Keyboard.currentBlocksLevel[Blockly.Keyboard.currentBlocksIndex].parentBlock_ != null) {
+    var parent1 = Blockly.Keyboard.currentBlocksLevel[Blockly.Keyboard.currentBlocksIndex].parentBlock_;
+    if(parent1.parentBlock_ != null) { // if the parent block has no parent, then it is part of the top blocks
+      Blockly.Keyboard.currentBlocksLevel = parent1.parentBlock_.childBlocks_;
+    } else {
+      Blockly.Keyboard.currentBlocksLevel = Blockly.mainWorkspace.getTopBlocks();
+    }
+    Blockly.Keyboard.currentBlocksIndex = Blockly.Keyboard.currentBlocksLevel.indexOf(parent1);
+  } else {
+    // do nothing, there is no parent
+  }
+
+  Blockly.Keyboard.selectCurrentBlock();
 }
 
 /* * * * * * * * * *
@@ -73,6 +97,10 @@ Blockly.Keyboard.selectFirstBlockInPreviousLevel = function() {
 Blockly.Keyboard.unselectSelectedBlock = function() {
   Blockly.selected.unselect();
   Blockly.selected = null;
+}
+
+Blockly.Keyboard.selectCurrentBlock = function() {
+  Blockly.Keyboard.currentBlocksLevel[Blockly.Keyboard.currentBlocksIndex].select();
 }
 
 /*
@@ -87,5 +115,13 @@ Blockly.Keyboard.wrapIncrement = function(list, idx) {
     return 0;
   } else {
     return idx + 1;
+  }
+}
+
+Blockly.Keyboard.wrapDecrement = function(list, idx) {
+  if(idx - 1 == -1) {
+    return list.length - 1;
+  } else {
+    return idx - 1;
   }
 }
