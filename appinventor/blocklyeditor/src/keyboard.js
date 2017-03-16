@@ -17,13 +17,17 @@ goog.require('goog.window');
 Blockly.Keyboard.currentBlocksLevel = [];
 Blockly.Keyboard.currentBlocksIndex = -1;
 
+Blockly.Keyboard.blockToMove = null;
+Blockly.Keyboard.possibleConnections = [];
+
 Blockly.Keyboard.workspaceKeyboardInteraction = function(keyCode) {
 
   var keyCodes = {
     DOWN: 40,
     UP: 38,
     RIGHT: 39,
-    LEFT: 37
+    LEFT: 37,
+    ENTER: 13
   };
 
   if(keyCode == keyCodes.DOWN) {
@@ -38,6 +42,23 @@ Blockly.Keyboard.workspaceKeyboardInteraction = function(keyCode) {
     Blockly.Keyboard.selectNextBlockInLevel();
   } else if(keyCode == keyCodes.LEFT) {
     Blockly.Keyboard.selectPreviousBlockInLevel();
+  } else if(keyCode == keyCodes.ENTER) { // select a block to move
+    if(Blockly.selected) {
+
+      var blockToMove = Blockly.selected;
+      var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+
+      if(blockToMove.outputConnection != null) { // if it's a value block
+        Blockly.Keyboard.blockToMove = blockToMove;
+      } else if(blockToMove.previousConnection != null) { // if it's a procedure block
+        Blockly.Keyboard.blockToMove = blockToMove;
+        Blockly.Keyboard.possibleConnections = allBlocks.filter(function(block) {
+          return (block.nextConnection != null || block.inputList[-1].connection != null) && block != blockToMove;
+        }).map(function(block) {
+          return block.nextConnection ? block.nextConnection : block.inputList[-1].connection;
+        });
+      } // otherwise the block can't be moved
+    }
   }
 }
 
