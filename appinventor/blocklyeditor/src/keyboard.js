@@ -48,15 +48,28 @@ Blockly.Keyboard.workspaceKeyboardInteraction = function(keyCode) {
       var blockToMove = Blockly.selected;
       var allBlocks = Blockly.mainWorkspace.getAllBlocks();
 
-      if(blockToMove.outputConnection != null) { // if it's a value block
+      // if this is a block with connections
+      if(blockToMove.outputConnection != null || blockToMove.previousConnection != null) {
         Blockly.Keyboard.blockToMove = blockToMove;
-      } else if(blockToMove.previousConnection != null) { // if it's a procedure block
-        Blockly.Keyboard.blockToMove = blockToMove;
-        Blockly.Keyboard.possibleConnections = allBlocks.filter(function(block) {
-          return (block.nextConnection != null || block.inputList[-1].connection != null) && block != blockToMove;
-        }).map(function(block) {
-          return block.nextConnection ? block.nextConnection : block.inputList[-1].connection;
+        var connections = [];
+
+        allBlocks.forEach(function(block) { // map each block to its connections
+          if(block != blockToMove) { // a block can't be connected to itself
+            block.inputList.forEach(function(input) { // add all input connections
+                connections.push(input);
+            });
+
+            if(block.nextConnection) { // if you can add a block below this block, then add it
+              connections.push(block.nextConnection);
+            }
+          }
         });
+
+        var selectedBlockConnection = blockToMove.outputConnection ? blockToMove.outputConnection : blockToMove.previousConnection;
+        connections = connections.filter(function(connection) {
+          return connection.isConnectionAllowed(selectedBlockConnection);
+        });
+        
       } // otherwise the block can't be moved
     }
   }
