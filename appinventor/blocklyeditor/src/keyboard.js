@@ -19,7 +19,7 @@ Blockly.Keyboard.currentBlocksIndex = -1;
 
 Blockly.Keyboard.blockToMove = null;
 Blockly.Keyboard.possibleConnections = [];
-Blockly.Keybaord.connectionIndex = -1;
+Blockly.Keyboard.connectionIndex = -1;
 
 Blockly.Keyboard.workspaceKeyboardInteraction = function(keyCode) {
 
@@ -39,11 +39,21 @@ Blockly.Keyboard.workspaceKeyboardInteraction = function(keyCode) {
       this.selectFirstBlockInWorkspace();
     }
   } else if(keyCode == keyCodes.UP) {
-    Blockly.Keyboard.blockToMove ? : Blockly.Keyboard.selectFirstBlockInPreviousLevel();
+    if(!Blockly.Keyboard.blockToMove) {
+      Blockly.Keyboard.selectFirstBlockInPreviousLevel();
+    }
   } else if(keyCode == keyCodes.RIGHT) {
-    Blockly.Keyboard.blockToMove ? Blockly.Keyboard.selectNextConnection() : Blockly.Keyboard.selectNextBlockInLevel();
+    if(Blockly.Keyboard.blockToMove) {
+      Blockly.Keyboard.selectNextConnection();
+    } else {
+      Blockly.Keyboard.selectNextBlockInLevel();
+    }
   } else if(keyCode == keyCodes.LEFT) {
-    Blockly.Keyboard.blockToMove ? Blockly.Keyboard.selectPreviousConnection() : Blockly.Keyboard.selectPreviousBlockInLevel();
+    if(Blockly.Keyboard.blockToMove) {
+      Blockly.Keyboard.selectPreviousConnection();
+    } else {
+      Blockly.Keyboard.selectPreviousBlockInLevel();
+    }
   } else if(keyCode == keyCodes.ENTER) { // select a block to move
     if(Blockly.selected) {
 
@@ -70,11 +80,11 @@ Blockly.Keyboard.workspaceKeyboardInteraction = function(keyCode) {
         });
 
         var selectedBlockConnection = blockToMove.outputConnection ? blockToMove.outputConnection : blockToMove.previousConnection;
-        Blockly.keyboard.possibleConnections = connections.filter(function(connection) {
+        Blockly.Keyboard.possibleConnections = connections.filter(function(connection) {
           return connection.isConnectionAllowed(selectedBlockConnection);
         });
 
-        Blockly.Keyboard.connectionIndex = -1;
+        Blockly.Keyboard.connectionIndex = 0;
 
       } // otherwise the block can't be moved
     }
@@ -131,13 +141,12 @@ Blockly.Keyboard.selectFirstBlockInPreviousLevel = function() {
   Blockly.Keyboard.selectCurrentBlock();
 }
 
-Blockly.Keyboard.nextConnection = function() {
+Blockly.Keyboard.selectNextConnection = function() {
   Blockly.Keyboard.connectionIndex = Blockly.Keyboard.wrapIncrement(Blockly.Keyboard.possibleConnections, Blockly.Keyboard.connectionIndex);
   Blockly.highlightedConnection_ = Blockly.Keyboard.possibleConnections[Blockly.Keyboard.connectionIndex];
-
 }
 
-Blockly.Keyboard.previousConnection = function() {
+Blockly.Keyboard.selectPreviousConnection = function() {
   Blockly.Keyboard.connectionIndex = Blockly.Keyboard.wrapDecrement(Blockly.Keyboard.possibleConnections, Blockly.Keyboard.connectionIndex);
   Blockly.highlightedConnection_ = Blockly.Keyboard.possibleConnections[Blockly.Keyboard.connectionIndex];
 }
@@ -161,7 +170,7 @@ Blockly.Keyboard.resetSelection = function() {
 
   Blockly.Keyboard.blockToMove = null;
   Blockly.Keyboard.possibleConnections = [];
-  Blockly.Keybaord.connectionIndex = -1;
+  Blockly.Keyboard.connectionIndex = -1;
 
   Blockly.highlightedConnection_ = null;
 }
