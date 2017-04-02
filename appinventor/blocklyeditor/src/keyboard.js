@@ -85,6 +85,8 @@ Blockly.Keyboard.workspaceKeyboardInteraction = function(keyCode) {
         });
 
         Blockly.Keyboard.connectionIndex = 0;
+        Blockly.highlightedConnection_ = Blockly.Keyboard.possibleConnections[Blockly.Keyboard.connectionIndex];
+        Blockly.highlightedConnection_.highlight();
 
       } // otherwise the block can't be moved
     }
@@ -142,13 +144,17 @@ Blockly.Keyboard.selectFirstBlockInPreviousLevel = function() {
 }
 
 Blockly.Keyboard.selectNextConnection = function() {
+  Blockly.highlightedConnection_.unhighlight();
   Blockly.Keyboard.connectionIndex = Blockly.Keyboard.wrapIncrement(Blockly.Keyboard.possibleConnections, Blockly.Keyboard.connectionIndex);
   Blockly.highlightedConnection_ = Blockly.Keyboard.possibleConnections[Blockly.Keyboard.connectionIndex];
+  Blockly.highlightedConnection_.highlight();
 }
 
 Blockly.Keyboard.selectPreviousConnection = function() {
+  Blockly.highlightedConnection_.unhighlight();
   Blockly.Keyboard.connectionIndex = Blockly.Keyboard.wrapDecrement(Blockly.Keyboard.possibleConnections, Blockly.Keyboard.connectionIndex);
   Blockly.highlightedConnection_ = Blockly.Keyboard.possibleConnections[Blockly.Keyboard.connectionIndex];
+  Blockly.highlightedConnection_.highlight();
 }
 
 /* * * * * * * * * *
