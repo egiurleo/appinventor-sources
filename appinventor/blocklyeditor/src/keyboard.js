@@ -65,6 +65,128 @@ Blockly.Keyboard.workspaceKeyboardInteraction = function(keyCode) {
   }
 }
 
+// --------------NAVIGATION AROUND BLOCKS WORKSPACE--------------
+
+/*
+ * selectFirstBlockInWorkspace
+ *    when the ViewBox is focused, you can press the down arrow to navigate into the blocks menu
+ *    and select the first block in the workspace; if there are no blocks, then do nothing
+ */
+Blockly.Keyboard.selectFirstBlockInWorkspace = function() {
+  Blockly.Keyboard.currentBlocksLevel = Blockly.mainWorkspace.getTopBlocks();
+
+  if(Blockly.Keyboard.currentBlocksLevel.length == 0) {
+    return;
+  }
+
+  Blockly.Keyboard.currentBlocksIndex = 0;
+  Blockly.Keyboard.selectCurrentBlock();
+}
+
+/*
+ * selectNextBlockInLevel
+ *    Use the right arrowkey to navigate to the next block in the same level of the hierarchy
+ *    If there are no blocks on workspace, do nothing
+ */
+Blockly.Keyboard.selectNextBlockInLevel = function() {
+  if(Blockly.Keyboard.currentBlocksLevel.length == 0) {
+    return;
+  }
+
+  Blockly.Keyboard.unselectSelectedBlock();
+  Blockly.Keyboard.currentBlocksIndex = Blockly.Keyboard.wrapIncrement(Blockly.Keyboard.currentBlocksLevel, Blockly.Keyboard.currentBlocksIndex);
+  Blockly.Keyboard.selectCurrentBlock();
+}
+
+/*
+ * selectPreviousBlockInLevel
+ *    Use the left arrowkey to navigate to the previous block in the same level of the hierarchy
+ *    If there are no blocks on workspace, do nothing
+ */
+Blockly.Keyboard.selectPreviousBlockInLevel = function() {
+  if(Blockly.Keyboard.currentBlocksLevel.length == 0) {
+    return;
+  }
+
+  Blockly.Keyboard.unselectSelectedBlock();
+  Blockly.Keyboard.currentBlocksIndex = Blockly.Keyboard.wrapDecrement(Blockly.Keyboard.currentBlocksLevel, Blockly.Keyboard.currentBlocksIndex);
+  Blockly.Keyboard.selectCurrentBlock();
+}
+
+/*
+ * selectFirstBlockInNextLevel
+ *    Use the down arrow key to select the first child block of the current block
+ */
+Blockly.Keyboard.selectFirstBlockInNextLevel = function() {
+  if(Blockly.Keyboard.currentBlocksLevel.length == 0) {
+    return;
+  }
+
+  var childBlocks = Blockly.Keyboard.currentBlocksLevel[Blockly.Keyboard.currentBlocksIndex].childBlocks_;
+
+  if(childBlocks.length > 0) {
+    Blockly.Keyboard.unselectSelectedBlock();
+    Blockly.Keyboard.currentBlocksLevel = Blockly.Keyboard.currentBlocksLevel[Blockly.Keyboard.currentBlocksIndex].childBlocks_;
+    Blockly.Keyboard.currentBlocksIndex = 0;
+    Blockly.Keyboard.selectCurrentBlock();
+  }
+}
+
+/*
+ * selectFirstBlockInPreviousLevel
+ *    Use the up arrow key to select the parent of the current block
+ */
+Blockly.Keyboard.selectFirstBlockInPreviousLevel = function() {
+  if(Blockly.Keyboard.currentBlocksLevel.length == 0) {
+    return;
+  }
+
+  Blockly.Keyboard.unselectSelectedBlock();
+
+  // the block is at least one level down
+  if(Blockly.Keyboard.currentBlocksLevel[Blockly.Keyboard.currentBlocksIndex].parentBlock_ != null) {
+    var parent1 = Blockly.Keyboard.currentBlocksLevel[Blockly.Keyboard.currentBlocksIndex].parentBlock_;
+    if(parent1.parentBlock_ != null) { // if the parent block has no parent, then it is part of the top blocks
+      Blockly.Keyboard.currentBlocksLevel = parent1.parentBlock_.childBlocks_;
+    } else {
+      Blockly.Keyboard.currentBlocksLevel = Blockly.mainWorkspace.getTopBlocks();
+    }
+    Blockly.Keyboard.currentBlocksIndex = Blockly.Keyboard.currentBlocksLevel.indexOf(parent1);
+  } else {
+    // do nothing, there is no parent
+  }
+
+  Blockly.Keyboard.selectCurrentBlock();
+}
+
+// --------------NAVIGATE AVAILABLE CONNECTIONS WHEN MOVING BLOCKS--------------
+/*
+ * selectNextConnection
+ *    Use the right arrow key to navigate to the next available connection to the selected block
+ */
+Blockly.Keyboard.selectNextConnection = function() {
+  Blockly.highlightedConnection_.unhighlight();
+  Blockly.Keyboard.connectionIndex = Blockly.Keyboard.wrapIncrement(Blockly.Keyboard.possibleConnections, Blockly.Keyboard.connectionIndex);
+  Blockly.highlightedConnection_ = Blockly.Keyboard.possibleConnections[Blockly.Keyboard.connectionIndex];
+  Blockly.highlightedConnection_.highlight();
+}
+
+/*
+ * selectPreviousConnection
+ *    Use the left arrow key to navigate to the previous available connection to the selected block
+ */
+Blockly.Keyboard.selectPreviousConnection = function() {
+  Blockly.highlightedConnection_.unhighlight();
+  Blockly.Keyboard.connectionIndex = Blockly.Keyboard.wrapDecrement(Blockly.Keyboard.possibleConnections, Blockly.Keyboard.connectionIndex);
+  Blockly.highlightedConnection_ = Blockly.Keyboard.possibleConnections[Blockly.Keyboard.connectionIndex];
+  Blockly.highlightedConnection_.highlight();
+}
+
+/*
+ * moveSelectedBlockToSelectedConnection
+ *    Disconnect the selected block from its current connection (if necessary) and connect it to
+ *    the newly highlighted connection
+ */
 Blockly.Keyboard.moveSelectedBlockToSelectedConnection = function () {
   var selectedBlockConnection = Blockly.Keyboard.blockToMove.outputConnection ? Blockly.Keyboard.blockToMove.outputConnection : Blockly.Keyboard.blockToMove.previousConnection;
   if(selectedBlockConnection.targetConnection) { // if the block is connected to something
@@ -74,6 +196,10 @@ Blockly.Keyboard.moveSelectedBlockToSelectedConnection = function () {
   Blockly.Keyboard.resetSelection();
 }
 
+/*
+ * selectBlockToMove
+ *    select a block to move to a new place in the workspace; create an array of available connections
+ */
 Blockly.Keyboard.selectBlockToMove = function() {
   var blockToMove = Blockly.selected;
   var allBlocks = Blockly.mainWorkspace.getAllBlocks();
@@ -108,93 +234,7 @@ Blockly.Keyboard.selectBlockToMove = function() {
   } // otherwise the block can't be moved
 }
 
-Blockly.Keyboard.selectFirstBlockInWorkspace = function() {
-  Blockly.Keyboard.currentBlocksLevel = Blockly.mainWorkspace.getTopBlocks();
-  
-  if(Blockly.Keyboard.currentBlocksLevel.length == 0) {
-    return;
-  }
-
-  Blockly.Keyboard.currentBlocksIndex = 0;
-  Blockly.Keyboard.selectCurrentBlock();
-}
-
-Blockly.Keyboard.selectNextBlockInLevel = function() {
-  if(Blockly.Keyboard.currentBlocksLevel.length == 0) {
-    return;
-  }
-
-  Blockly.Keyboard.unselectSelectedBlock();
-  Blockly.Keyboard.currentBlocksIndex = Blockly.Keyboard.wrapIncrement(Blockly.Keyboard.currentBlocksLevel, Blockly.Keyboard.currentBlocksIndex);
-  Blockly.Keyboard.selectCurrentBlock();
-}
-
-Blockly.Keyboard.selectPreviousBlockInLevel = function() {
-  if(Blockly.Keyboard.currentBlocksLevel.length == 0) {
-    return;
-  }
-
-  Blockly.Keyboard.unselectSelectedBlock();
-  Blockly.Keyboard.currentBlocksIndex = Blockly.Keyboard.wrapDecrement(Blockly.Keyboard.currentBlocksLevel, Blockly.Keyboard.currentBlocksIndex);
-  Blockly.Keyboard.selectCurrentBlock();
-}
-
-Blockly.Keyboard.selectFirstBlockInNextLevel = function() {
-  if(Blockly.Keyboard.currentBlocksLevel.length == 0) {
-    return;
-  }
-
-  var childBlocks = Blockly.Keyboard.currentBlocksLevel[Blockly.Keyboard.currentBlocksIndex].childBlocks_;
-
-  if(childBlocks.length > 0) {
-    Blockly.Keyboard.unselectSelectedBlock();
-    Blockly.Keyboard.currentBlocksLevel = Blockly.Keyboard.currentBlocksLevel[Blockly.Keyboard.currentBlocksIndex].childBlocks_;
-    Blockly.Keyboard.currentBlocksIndex = 0;
-    Blockly.Keyboard.selectCurrentBlock();
-  }
-}
-
-Blockly.Keyboard.selectFirstBlockInPreviousLevel = function() {
-  if(Blockly.Keyboard.currentBlocksLevel.length == 0) {
-    return;
-  }
-
-  Blockly.Keyboard.unselectSelectedBlock();
-
-  // the block is at least one level down
-  if(Blockly.Keyboard.currentBlocksLevel[Blockly.Keyboard.currentBlocksIndex].parentBlock_ != null) {
-    var parent1 = Blockly.Keyboard.currentBlocksLevel[Blockly.Keyboard.currentBlocksIndex].parentBlock_;
-    if(parent1.parentBlock_ != null) { // if the parent block has no parent, then it is part of the top blocks
-      Blockly.Keyboard.currentBlocksLevel = parent1.parentBlock_.childBlocks_;
-    } else {
-      Blockly.Keyboard.currentBlocksLevel = Blockly.mainWorkspace.getTopBlocks();
-    }
-    Blockly.Keyboard.currentBlocksIndex = Blockly.Keyboard.currentBlocksLevel.indexOf(parent1);
-  } else {
-    // do nothing, there is no parent
-  }
-
-  Blockly.Keyboard.selectCurrentBlock();
-}
-
-Blockly.Keyboard.selectNextConnection = function() {
-  Blockly.highlightedConnection_.unhighlight();
-  Blockly.Keyboard.connectionIndex = Blockly.Keyboard.wrapIncrement(Blockly.Keyboard.possibleConnections, Blockly.Keyboard.connectionIndex);
-  Blockly.highlightedConnection_ = Blockly.Keyboard.possibleConnections[Blockly.Keyboard.connectionIndex];
-  Blockly.highlightedConnection_.highlight();
-}
-
-Blockly.Keyboard.selectPreviousConnection = function() {
-  Blockly.highlightedConnection_.unhighlight();
-  Blockly.Keyboard.connectionIndex = Blockly.Keyboard.wrapDecrement(Blockly.Keyboard.possibleConnections, Blockly.Keyboard.connectionIndex);
-  Blockly.highlightedConnection_ = Blockly.Keyboard.possibleConnections[Blockly.Keyboard.connectionIndex];
-  Blockly.highlightedConnection_.highlight();
-}
-
-/* * * * * * * * * *
- *  UTIL FUNCTIONS *
- * * * * * * * * * *
- */
+// --------------USEFUL FUNCTIONS--------------
 
 Blockly.Keyboard.unselectSelectedBlock = function() {
   Blockly.selected.unselect();
@@ -220,6 +260,7 @@ Blockly.Keyboard.resetSelection = function() {
   }
 }
 
+
 Blockly.Keyboard.selectCurrentBlock = function() {
   Blockly.Keyboard.currentBlocksLevel[Blockly.Keyboard.currentBlocksIndex].select();
 }
@@ -239,6 +280,13 @@ Blockly.Keyboard.wrapIncrement = function(list, idx) {
   }
 }
 
+/*
+ * wrapDecrement
+ * @param list [Array] - a list
+ * @param idx [int] - an index in the list given
+ *
+ * return the decremented index, or, if the index is going off the list, list.length - 1
+ */
 Blockly.Keyboard.wrapDecrement = function(list, idx) {
   if(idx - 1 == -1) {
     return list.length - 1;
