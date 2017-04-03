@@ -55,44 +55,57 @@ Blockly.Keyboard.workspaceKeyboardInteraction = function(keyCode) {
       Blockly.Keyboard.selectPreviousBlockInLevel();
     }
   } else if(keyCode == keyCodes.ENTER) { // select a block to move
-    if(Blockly.selected) {
-
-      var blockToMove = Blockly.selected;
-      var allBlocks = Blockly.mainWorkspace.getAllBlocks();
-
-      // if this is a block with connections
-      if(blockToMove.outputConnection != null || blockToMove.previousConnection != null) {
-        Blockly.Keyboard.blockToMove = blockToMove;
-        var connections = [];
-
-        allBlocks.forEach(function(block) { // map each block to its connections
-          if(block != blockToMove) { // a block can't be connected to itself
-            block.inputList.forEach(function(input) { // add all input connections
-              if(input.connection) {
-                connections.push(input.connection);
-              }
-            });
-
-            if(block.nextConnection) { // if you can add a block below this block, then add it
-              connections.push(block.nextConnection);
-            }
-          }
-        });
-
-        var selectedBlockConnection = blockToMove.outputConnection ? blockToMove.outputConnection : blockToMove.previousConnection;
-        Blockly.Keyboard.possibleConnections = connections.filter(function(connection) {
-          return connection.isConnectionAllowed(selectedBlockConnection);
-        });
-
-        Blockly.Keyboard.connectionIndex = 0;
-        Blockly.highlightedConnection_ = Blockly.Keyboard.possibleConnections[Blockly.Keyboard.connectionIndex];
-        Blockly.highlightedConnection_.highlight();
-
-      } // otherwise the block can't be moved
+    if(Blockly.selected && !Blockly.highlightedConnection_) { // if you're just selecting a block
+      Blockly.Keyboard.selectBlockToMove();
+    } else if(Blockly.selected && Blockly.highlightedConnection_) { // if you're moving the block to a certain connetion
+      Blockly.Keyboard.moveSelectedBlockToSelectedConnection();
     }
   } else if(keyCode == keyCodes.ESC) { // unselect everything
     Blockly.Keyboard.resetSelection();
   }
+}
+
+Blockly.Keyboard.moveSelectedBlockToSelectedConnection = function () {
+  var selectedBlockConnection = Blockly.Keyboard.blockToMove.outputConnection ? Blockly.Keyboard.blockToMove.outputConnection : Blockly.Keyboard.blockToMove.previousConnection;
+  if(selectedBlockConnection.targetConnection) { // if the block is connected to something
+    selectedBlockConnection.disconnect();
+  }
+  selectedBlockConnection.connect(Blockly.highlightedConnection_);
+  Blockly.Keyboard.resetSelection();
+}
+
+Blockly.Keyboard.selectBlockToMove = function() {
+  var blockToMove = Blockly.selected;
+  var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+
+  // if this is a block with connections
+  if(blockToMove.outputConnection != null || blockToMove.previousConnection != null) {
+    Blockly.Keyboard.blockToMove = blockToMove;
+    var connections = [];
+
+    allBlocks.forEach(function(block) { // map each block to its connections
+      if(block != blockToMove) { // a block can't be connected to itself
+        block.inputList.forEach(function(input) { // add all input connections
+          if(input.connection) {
+            connections.push(input.connection);
+          }
+        });
+
+        if(block.nextConnection) { // if you can add a block below this block, then add it
+          connections.push(block.nextConnection);
+        }
+      }
+    });
+
+    var selectedBlockConnection = blockToMove.outputConnection ? blockToMove.outputConnection : blockToMove.previousConnection;
+    Blockly.Keyboard.possibleConnections = connections.filter(function(connection) {
+      return connection.isConnectionAllowed(selectedBlockConnection);
+    });
+
+    Blockly.Keyboard.connectionIndex = 0;
+    Blockly.highlightedConnection_ = Blockly.Keyboard.possibleConnections[Blockly.Keyboard.connectionIndex];
+    Blockly.highlightedConnection_.highlight();
+  } // otherwise the block can't be moved
 }
 
 Blockly.Keyboard.selectFirstBlockInWorkspace = function() {
@@ -168,17 +181,22 @@ Blockly.Keyboard.unselectSelectedBlock = function() {
 }
 
 Blockly.Keyboard.resetSelection = function() {
-  Blockly.Keyboard.unselectSelectedBlock();
+  if(Blockly.selected) {
+    Blockly.Keyboard.unselectSelectedBlock();
 
-  // reset all the relevant variables
-  Blockly.Keyboard.currentBlocksLevel = [];
-  Blockly.Keyboard.currentBlocksIndex = -1;
+    // reset all the relevant variables
+    Blockly.Keyboard.currentBlocksLevel = [];
+    Blockly.Keyboard.currentBlocksIndex = -1;
+  }
 
-  Blockly.Keyboard.blockToMove = null;
-  Blockly.Keyboard.possibleConnections = [];
-  Blockly.Keyboard.connectionIndex = -1;
+  if(Blockly.highlightedConnection_) {
+    Blockly.Keyboard.blockToMove = null;
+    Blockly.Keyboard.possibleConnections = [];
+    Blockly.Keyboard.connectionIndex = -1;
 
-  Blockly.highlightedConnection_ = null;
+    Blockly.highlightedConnection_.unhighlight();
+    Blockly.highlightedConnection_ = null;
+  }
 }
 
 Blockly.Keyboard.selectCurrentBlock = function() {
