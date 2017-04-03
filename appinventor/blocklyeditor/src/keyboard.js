@@ -110,23 +110,40 @@ Blockly.Keyboard.selectBlockToMove = function() {
 
 Blockly.Keyboard.selectFirstBlockInWorkspace = function() {
   Blockly.Keyboard.currentBlocksLevel = Blockly.mainWorkspace.getTopBlocks();
+  
+  if(Blockly.Keyboard.currentBlocksLevel.length == 0) {
+    return;
+  }
+
   Blockly.Keyboard.currentBlocksIndex = 0;
   Blockly.Keyboard.selectCurrentBlock();
 }
 
 Blockly.Keyboard.selectNextBlockInLevel = function() {
+  if(Blockly.Keyboard.currentBlocksLevel.length == 0) {
+    return;
+  }
+
   Blockly.Keyboard.unselectSelectedBlock();
   Blockly.Keyboard.currentBlocksIndex = Blockly.Keyboard.wrapIncrement(Blockly.Keyboard.currentBlocksLevel, Blockly.Keyboard.currentBlocksIndex);
   Blockly.Keyboard.selectCurrentBlock();
 }
 
 Blockly.Keyboard.selectPreviousBlockInLevel = function() {
+  if(Blockly.Keyboard.currentBlocksLevel.length == 0) {
+    return;
+  }
+
   Blockly.Keyboard.unselectSelectedBlock();
   Blockly.Keyboard.currentBlocksIndex = Blockly.Keyboard.wrapDecrement(Blockly.Keyboard.currentBlocksLevel, Blockly.Keyboard.currentBlocksIndex);
   Blockly.Keyboard.selectCurrentBlock();
 }
 
 Blockly.Keyboard.selectFirstBlockInNextLevel = function() {
+  if(Blockly.Keyboard.currentBlocksLevel.length == 0) {
+    return;
+  }
+
   var childBlocks = Blockly.Keyboard.currentBlocksLevel[Blockly.Keyboard.currentBlocksIndex].childBlocks_;
 
   if(childBlocks.length > 0) {
@@ -138,6 +155,10 @@ Blockly.Keyboard.selectFirstBlockInNextLevel = function() {
 }
 
 Blockly.Keyboard.selectFirstBlockInPreviousLevel = function() {
+  if(Blockly.Keyboard.currentBlocksLevel.length == 0) {
+    return;
+  }
+
   Blockly.Keyboard.unselectSelectedBlock();
 
   // the block is at least one level down

@@ -60,7 +60,9 @@ public class ViewerBox extends Box {
       @Override
       public void onKeyDown(KeyDownEvent event) {
         int keyCode = event.getNativeKeyCode();
-        event.preventDefault();
+        if(keyCode == KeyCodes.KEY_DOWN || keyCode == KeyCodes.KEY_UP) { // prevent moving screen up and down
+          event.preventDefault();
+        }
         blocksArea.workspaceKeyboardInteractions(keyCode);
       }
     });
