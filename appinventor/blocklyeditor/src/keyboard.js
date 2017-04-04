@@ -29,13 +29,14 @@ Blockly.Keyboard.workspaceKeyboardInteraction = function(keyCode) {
     RIGHT: 39,
     LEFT: 37,
     ENTER: 13,
-    ESC: 27
+    ESC: 27,
+    TAB: 9
   };
 
   if(keyCode == keyCodes.DOWN) {
     if(Blockly.selected && !Blockly.Keyboard.blockToMove) { // if there is a selected block on the workspace
       Blockly.Keyboard.selectFirstBlockInNextLevel();
-    } else {
+    } else if(!Blockly.Keyboard.blockToMove) {
       this.selectFirstBlockInWorkspace();
     }
   } else if(keyCode == keyCodes.UP) {
@@ -60,7 +61,7 @@ Blockly.Keyboard.workspaceKeyboardInteraction = function(keyCode) {
     } else if(Blockly.selected && Blockly.highlightedConnection_) { // if you're moving the block to a certain connetion
       Blockly.Keyboard.moveSelectedBlockToSelectedConnection();
     }
-  } else if(keyCode == keyCodes.ESC) { // unselect everything
+  } else if(keyCode == keyCodes.ESC || keyCode == keyCodes.TAB) { // unselect everything
     Blockly.Keyboard.resetSelection();
   }
 }
@@ -206,7 +207,6 @@ Blockly.Keyboard.selectBlockToMove = function() {
 
   // if this is a block with connections
   if(blockToMove.outputConnection != null || blockToMove.previousConnection != null) {
-    Blockly.Keyboard.blockToMove = blockToMove;
     var connections = [];
 
     allBlocks.forEach(function(block) { // map each block to its connections
@@ -228,13 +228,20 @@ Blockly.Keyboard.selectBlockToMove = function() {
       return connection.isConnectionAllowed(selectedBlockConnection);
     });
 
-    Blockly.Keyboard.connectionIndex = 0;
-    Blockly.highlightedConnection_ = Blockly.Keyboard.possibleConnections[Blockly.Keyboard.connectionIndex];
-    Blockly.highlightedConnection_.highlight();
+    if(Blockly.Keyboard.possibleConnections.length > 0) {
+      Blockly.Keyboard.blockToMove = blockToMove;
+      Blockly.Keyboard.connectionIndex = 0;
+      Blockly.highlightedConnection_ = Blockly.Keyboard.possibleConnections[Blockly.Keyboard.connectionIndex];
+      Blockly.highlightedConnection_.highlight();
+    }
   } // otherwise the block can't be moved
 }
 
 // --------------USEFUL FUNCTIONS--------------
+
+Blockly.Keyboard.updateCurrentBlocksLevel = function() {
+
+}
 
 Blockly.Keyboard.unselectSelectedBlock = function() {
   Blockly.selected.unselect();
