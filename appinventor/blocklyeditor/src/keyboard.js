@@ -220,12 +220,16 @@ Blockly.Keyboard.selectBlockToMove = function() {
         if(block.nextConnection) { // if you can add a block below this block, then add it
           connections.push(block.nextConnection);
         }
+
+        if(block.previousConnection) {
+          connections.push(block.previousConnection);
+        }
       }
     });
 
     var selectedBlockConnection = blockToMove.outputConnection ? blockToMove.outputConnection : blockToMove.previousConnection;
     Blockly.Keyboard.possibleConnections = connections.filter(function(connection) {
-      return connection.isConnectionAllowed(selectedBlockConnection);
+      return connection.canConnectWithReason_(selectedBlockConnection) == Blockly.Connection.CAN_CONNECT;
     });
 
     if(Blockly.Keyboard.possibleConnections.length > 0) {
