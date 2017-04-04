@@ -190,9 +190,15 @@ Blockly.Keyboard.selectPreviousConnection = function() {
  */
 Blockly.Keyboard.moveSelectedBlockToSelectedConnection = function () {
   var selectedBlockConnection = Blockly.Keyboard.blockToMove.outputConnection ? Blockly.Keyboard.blockToMove.outputConnection : Blockly.Keyboard.blockToMove.previousConnection;
+
   if(selectedBlockConnection.targetConnection) { // if the block is connected to something
     selectedBlockConnection.disconnect();
   }
+
+  if(Blockly.highlightedConnection_.targetConnection) {
+    Blockly.highlightedConnection_.disconnect();
+  }
+
   selectedBlockConnection.connect(Blockly.highlightedConnection_);
   Blockly.Keyboard.resetSelection();
 }
