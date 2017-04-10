@@ -24,9 +24,7 @@ Blockly.Keyboard.connectionIndex = -1;
 Blockly.Keyboard.fields = [];
 Blockly.Keyboard.fieldIndex = -1;
 
-// Blockly.Keyboard.prototype.init = function() {
-//   Blockly.bindEvent_(document, 'keydown', null, Blockly.Keyboard.workspaceKeyboardInteraction);
-// }
+// Blockly.bindEvent_(document, 'keydown', null, Blockly.Keyboard.workspaceKeyboardInteraction);
 
 Blockly.Keyboard.workspaceKeyboardInteraction = function(e) {
 
