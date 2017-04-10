@@ -114,6 +114,7 @@ public final class BlockSelectorBox extends Box {
         int keyCode = event.getNativeKeyCode();
         if(keyCode == KeyCodes.KEY_DOWN) {
           event.preventDefault();
+          getElement().blur();
           sourceStructureExplorer.setFocus(true);
         } else if(keyCode == KeyCodes.KEY_D) { //TODO: choose the actual key
           event.preventDefault();
