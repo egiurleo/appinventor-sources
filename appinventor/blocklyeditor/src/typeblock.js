@@ -64,11 +64,19 @@ Blockly.TypeBlock = function( htmlConfig ){
       Blockly.TypeBlock.hide();
       return;
     }
+    if(e.keyCode === 37 || e.keyCode === 38 || e.keyCode === 39 || e.keyCode === 40) {
+      e.preventDefault();
+      return;
+    }
+
     // A way to know if the user is editing a block or trying to type a new one
     if (e.target.tagName != 'svg' && e.target.id === '') return;
     if (goog.style.isElementShown(goog.dom.getElement(Blockly.TypeBlock.typeBlockDiv_))) {
       // Enter in the panel makes it select an option
       if (e.keyCode === 13) Blockly.TypeBlock.hide();
+    } else if (e.keyCode === 13) {
+      e.preventDefault();
+      return;
     }
     else {
       Blockly.TypeBlock.show();

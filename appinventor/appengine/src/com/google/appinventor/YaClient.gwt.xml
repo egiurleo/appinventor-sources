@@ -132,7 +132,7 @@
   <set-property-fallback name="locale" value="en"/>
   -->
 
-  <add-linker name="std" />
+  <add-linker name="sso" />
+  <collapse-all-properties />
 
 </module>
-

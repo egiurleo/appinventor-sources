@@ -28,6 +28,12 @@ Blockly.Keyboard.fieldIndex = -1;
 
 Blockly.Keyboard.workspaceKeyboardInteraction = function(e) {
 
+  if (Blockly.mainWorkspace.options.readOnly || Blockly.isTargetInput_(e)) {
+    // No key actions on readonly workspaces.
+    // When focused on an HTML text input widget, don't trap any keys.
+    return;
+  }
+
   var keyCode = e.keyCode;
 
   var keyCodes = {
@@ -64,14 +70,10 @@ Blockly.Keyboard.workspaceKeyboardInteraction = function(e) {
       Blockly.Keyboard.selectPreviousBlockInLevel();
     }
   } else if(keyCode == keyCodes.ENTER) { // select a block to move
-    if(Blockly.Keyboard.fieldIndex != -1) {
-      Blockly.Keyboard.accessField();
-    } else {
-      if(Blockly.selected && !Blockly.highlightedConnection_) { // if you're just selecting a block
-        Blockly.Keyboard.selectBlockToMove();
-      } else if(Blockly.selected && Blockly.highlightedConnection_) { // if you're moving the block to a certain connetion
-        Blockly.Keyboard.moveSelectedBlockToSelectedConnection();
-      }
+    if(Blockly.selected && !Blockly.highlightedConnection_) { // if you're just selecting a block
+      Blockly.Keyboard.selectBlockToMove();
+    } else if(Blockly.selected && Blockly.highlightedConnection_) { // if you're moving the block to a certain connetion
+      Blockly.Keyboard.moveSelectedBlockToSelectedConnection();
     }
   } else if(keyCode == keyCodes.ESC || keyCode == keyCodes.TAB) { // unselect everything
     if(Blockly.Keyboard.fieldIndex == -1) {
@@ -79,13 +81,14 @@ Blockly.Keyboard.workspaceKeyboardInteraction = function(e) {
     } else {
       Blockly.Keyboard.unselectField();
     }
-  } else if(keyCode == keyCodes.F) { // look at the fields
-    if(Blockly.Keyboard.fieldIndex == -1) {
-      Blockly.Keyboard.selectFirstField();
-    } else {
-      Blockly.Keyboard.selectNextField();
-    }
   }
+  // } else if(keyCode == keyCodes.F) { // look at the fields
+  //   if(Blockly.Keyboard.fieldIndex == -1) {
+  //     Blockly.Keyboard.selectFirstField();
+  //   } else {
+  //     Blockly.Keyboard.selectNextField();
+  //   }
+  // }
 }
 
 // --------------NAVIGATION AROUND BLOCKS WORKSPACE--------------
