@@ -14,6 +14,7 @@ import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.gwt.aria.client.Roles;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.event.dom.client.*;
 
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
@@ -63,7 +64,13 @@ public class ViewerBox extends Box {
         if(keyCode == KeyCodes.KEY_DOWN || keyCode == KeyCodes.KEY_UP) { // prevent moving screen up and down
           event.preventDefault();
         }
-        blocksArea.workspaceKeyboardInteractions(keyCode);
+
+        if(keyCode == KeyCodes.KEY_DOWN) {
+          getElement().blur();
+          DOM.getElementById("blocklyframe").focus();
+          blocksArea.selectFirstBlockInWorkspace();
+        }
+
       }
     });
   }

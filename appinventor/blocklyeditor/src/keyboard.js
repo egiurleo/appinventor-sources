@@ -24,7 +24,13 @@ Blockly.Keyboard.connectionIndex = -1;
 Blockly.Keyboard.fields = [];
 Blockly.Keyboard.fieldIndex = -1;
 
-Blockly.Keyboard.workspaceKeyboardInteraction = function(keyCode) {
+// Blockly.Keyboard.prototype.init = function() {
+//   Blockly.bindEvent_(document, 'keydown', null, Blockly.Keyboard.workspaceKeyboardInteraction);
+// }
+
+Blockly.Keyboard.workspaceKeyboardInteraction = function(e) {
+
+  var keyCode = e.keyCode;
 
   var keyCodes = {
     DOWN: 40,

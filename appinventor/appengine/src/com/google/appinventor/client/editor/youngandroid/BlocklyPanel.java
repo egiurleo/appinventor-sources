@@ -82,7 +82,7 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     "  border: solid black 1px;\n" +
     "}\n" +
     "</style>\n" +
-    "<iframe src=\"blocklyframe.html#FORM_NAME\" class=\"svg\">";
+    "<iframe src=\"blocklyframe.html#FORM_NAME\" class=\"svg\" id=\"blocklyframe\">";
 
   // Keep track of component additions/removals/renames that happen before
   // blocks editor is inited for the first time, or before reinitialization
@@ -468,8 +468,8 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
   /**
    * Pass on a keycode to the Blockly workspace for keyboard interactions
    */
-  public void workspaceKeyboardInteractions(int keyCode) {
-    doWorkspaceKeyboardInteractions(formName, keyCode);
+  public void selectFirstBlockInWorkspace() {
+    doSelectFirstBlockInWorkspace(formName);
   }
 
   public void renderBlockly() {
@@ -1039,8 +1039,8 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     }
   }-*/;
 
-  private static native void doWorkspaceKeyboardInteractions(String formName, int keyCode) /*-{
-    $wnd.Blocklies[formName].Keyboard.workspaceKeyboardInteraction(keyCode);
+  private static native void doSelectFirstBlockInWorkspace(String formName) /*-{
+    $wnd.Blocklies[formName].Keyboard.selectFirstBlockInWorkspace();
   }-*/;
 
   public static native boolean doDrawerShowing(String formName) /*-{
