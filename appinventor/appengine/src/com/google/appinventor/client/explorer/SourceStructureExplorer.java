@@ -29,13 +29,19 @@ public class SourceStructureExplorer extends Composite {
   private final Tree tree;
   private final TextButton renameButton;
   private final TextButton deleteButton;
+  private boolean keyboardNav = true;
 
   /**
    * Creates a new source structure explorer.
    */
   public SourceStructureExplorer() {
     // Initialize UI elements
-    tree = new Tree(Ode.getImageBundle());
+    tree = new Tree(Ode.getImageBundle()) {
+      @Override
+      public boolean isKeyboardNavigationEnabled(TreeItem currentItem) {
+         return keyboardNav;
+      }
+    };
     tree.getElement().setId("source-structure-explorer-tree");
     tree.setAnimationEnabled(true);
     tree.setTabIndex(-1); //remove this tree from the tab flow
@@ -278,5 +284,9 @@ public class SourceStructureExplorer extends Composite {
    */
   public void unselectItem(SourceStructureExplorerItem item) {
     selectItem(item, false);
+  }
+
+  public void enableKeyboard(boolean b) {
+    keyboardNav = b;
   }
 }

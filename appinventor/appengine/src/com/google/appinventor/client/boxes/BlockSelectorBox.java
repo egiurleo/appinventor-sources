@@ -86,6 +86,8 @@ public final class BlockSelectorBox extends Box {
 
   private List<BlockDrawerSelectionListener> drawerListeners;
 
+  private boolean blockSelected;
+
   /**
    * Return the singleton BlockSelectorBox box.
    *
@@ -108,26 +110,36 @@ public final class BlockSelectorBox extends Box {
     setVisible(false);
     drawerListeners = new ArrayList<BlockDrawerSelectionListener>();
 
+    blockSelected = false;
+
     this.addKeyDownHandler(new KeyDownHandler() {
       @Override
       public void onKeyDown(KeyDownEvent event) {
         int keyCode = event.getNativeKeyCode();
         if(keyCode == KeyCodes.KEY_DOWN) {
+          if(!blockSelected) {
+            event.preventDefault();
+            sourceStructureExplorer.setFocus(true);
+          } else {
+            event.preventDefault();
+            fireNextBlockInDrawerSelected();
+          }
+        } else if(keyCode == KeyCodes.KEY_RIGHT) { //TODO: choose the actual key
           event.preventDefault();
-          getElement().blur();
-          sourceStructureExplorer.setFocus(true);
-        } else if(keyCode == KeyCodes.KEY_D) { //TODO: choose the actual key
-          event.preventDefault();
+          sourceStructureExplorer.enableKeyboard(false);
+          sourceStructureExplorer.setFocus(false);
           fireFirstBlockInDrawerSelected();
+          blockSelected = true;
+        } else if(keyCode == KeyCodes.KEY_UP) {
+          event.preventDefault();
+          firePreviousBlockInDrawerSelected();
         } else if(keyCode == KeyCodes.KEY_ENTER) {
           event.preventDefault();
           fireAddSelectedBlockToWorkspace();
-        } else if(keyCode == KeyCodes.KEY_S) {
+        } else if(keyCode == KeyCodes.KEY_ESCAPE) {
           event.preventDefault();
-          fireNextBlockInDrawerSelected();
-        } else if(keyCode == KeyCodes.KEY_W) {
-          event.preventDefault();
-          firePreviousBlockInDrawerSelected();
+          sourceStructureExplorer.enableKeyboard(true);
+          sourceStructureExplorer.setFocus(true);
         }
       }
     });
