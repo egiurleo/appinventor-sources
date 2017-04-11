@@ -44,7 +44,7 @@ Blockly.Keyboard.workspaceKeyboardInteraction = function(e) {
     ENTER: 13,
     ESC: 27,
     TAB: 9,
-    F: 70
+    SHIFT: 16
   };
 
   if(keyCode == keyCodes.DOWN) {
@@ -60,20 +60,26 @@ Blockly.Keyboard.workspaceKeyboardInteraction = function(e) {
   } else if(keyCode == keyCodes.RIGHT) {
     if(Blockly.Keyboard.blockToMove) {
       Blockly.Keyboard.selectNextConnection();
+    } else if(Blockly.Keyboard.fieldIndex > -1) {
+      Blockly.Keyboard.selectNextField();
     } else {
       Blockly.Keyboard.selectNextBlockInLevel();
     }
   } else if(keyCode == keyCodes.LEFT) {
     if(Blockly.Keyboard.blockToMove) {
       Blockly.Keyboard.selectPreviousConnection();
+    } else if(Blockly.Keyboard.fieldIndex > -1) {
+      Blockly.Keyboard.selectPreviousField();
     } else {
       Blockly.Keyboard.selectPreviousBlockInLevel();
     }
   } else if(keyCode == keyCodes.ENTER) { // select a block to move
-    if(Blockly.selected && !Blockly.highlightedConnection_) { // if you're just selecting a block
+    if(Blockly.selected && !Blockly.highlightedConnection_ && Blockly.Keyboard.fieldIndex == -1) { // if you're just selecting a block
       Blockly.Keyboard.selectBlockToMove();
     } else if(Blockly.selected && Blockly.highlightedConnection_) { // if you're moving the block to a certain connetion
       Blockly.Keyboard.moveSelectedBlockToSelectedConnection();
+    } else if(Blockly.Keyboard.fieldIndex > -1) {
+      Blockly.Keyboard.accessField();
     }
   } else if(keyCode == keyCodes.ESC || keyCode == keyCodes.TAB) { // unselect everything
     if(Blockly.Keyboard.fieldIndex == -1) {
@@ -81,14 +87,11 @@ Blockly.Keyboard.workspaceKeyboardInteraction = function(e) {
     } else {
       Blockly.Keyboard.unselectField();
     }
+  } else if(keyCode == keyCodes.SHIFT) { // look at the fields
+    if(Blockly.Keyboard.fieldIndex == -1) {
+      Blockly.Keyboard.selectFirstField();
+    }
   }
-  // } else if(keyCode == keyCodes.F) { // look at the fields
-  //   if(Blockly.Keyboard.fieldIndex == -1) {
-  //     Blockly.Keyboard.selectFirstField();
-  //   } else {
-  //     Blockly.Keyboard.selectNextField();
-  //   }
-  // }
 }
 
 // --------------NAVIGATION AROUND BLOCKS WORKSPACE--------------
@@ -293,7 +296,6 @@ Blockly.Keyboard.selectFirstField = function() {
 
   if(Blockly.Keyboard.fields.length > 0) {
     Blockly.Keyboard.fieldIndex = 0;
-    // Blockly.Keyboard.fields[Blockly.Keyboard.fieldIndex].showEditor_();
   }
 }
 
@@ -301,8 +303,17 @@ Blockly.Keyboard.selectNextField = function() {
   Blockly.Keyboard.fieldIndex = Blockly.Keyboard.wrapIncrement(Blockly.Keyboard.fields, Blockly.Keyboard.fieldIndex);
 }
 
+Blockly.Keyboard.selectPreviousField = function() {
+  Blockly.Keyboard.fieldIndex = Blockly.Keyboard.wrapDecrement(Blockly.Keyboard.fields, Blockly.Keyboard.fieldIndex);
+}
+
 Blockly.Keyboard.accessField = function() {
   Blockly.Keyboard.fields[Blockly.Keyboard.fieldIndex].showEditor_();
+}
+
+Blockly.Keyboard.unselectField = function() {
+  Blockly.Keyboard.fields = [];
+  Blockly.Keyboard.fieldIndex = -1;
 }
 
 // --------------USEFUL FUNCTIONS--------------

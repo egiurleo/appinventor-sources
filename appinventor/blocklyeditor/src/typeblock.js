@@ -64,7 +64,7 @@ Blockly.TypeBlock = function( htmlConfig ){
       Blockly.TypeBlock.hide();
       return;
     }
-    if(e.keyCode === 37 || e.keyCode === 38 || e.keyCode === 39 || e.keyCode === 40) {
+    if(e.keyCode === 37 || e.keyCode === 38 || e.keyCode === 39 || e.keyCode === 40 || e.keyCode === 16) {
       e.preventDefault();
       return;
     }
