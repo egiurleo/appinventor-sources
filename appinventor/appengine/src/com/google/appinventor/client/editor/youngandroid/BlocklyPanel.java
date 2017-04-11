@@ -996,8 +996,12 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
   }-*/;
 
   private static native void doSelectBlock(String formName, int blockNumber) /*-{
-    $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_.svgList[blockNumber].addSelect();
-    $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_.selectedBlock = blockNumber;
+    var selectedBlock = $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_.selectedBlock;
+    if(selectedBlock == -1) {
+      $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_.svgList[blockNumber].addSelect();
+      $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_.selectedBlock = blockNumber;
+    }
+
   }-*/;
 
   private static native void doSelectNextBlock(String formName) /*-{
