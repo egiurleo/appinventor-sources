@@ -12,6 +12,10 @@ import com.google.appinventor.client.widgets.TextButton;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.*;
 import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Window;
+import com.google.appinventor.client.boxes.BlockSelectorBox;
 
 import java.util.Iterator;
 
@@ -30,6 +34,7 @@ public class SourceStructureExplorer extends Composite {
   private final TextButton renameButton;
   private final TextButton deleteButton;
   private boolean keyboardNav = true;
+  private BlockSelectorBox box = null;
 
   /**
    * Creates a new source structure explorer.
@@ -40,6 +45,21 @@ public class SourceStructureExplorer extends Composite {
       @Override
       public boolean isKeyboardNavigationEnabled(TreeItem currentItem) {
          return keyboardNav;
+      }
+
+      @Override
+      public void onBrowserEvent(Event event) {
+        int eventType = DOM.eventGetType(event);
+
+        switch(eventType) {
+          case Event.ONKEYDOWN:
+            super.onBrowserEvent(event);
+            if(box != null) {
+              box.getElement().focus();
+            }
+          default:
+            break;
+        }
       }
     };
     tree.getElement().setId("source-structure-explorer-tree");
@@ -288,5 +308,9 @@ public class SourceStructureExplorer extends Composite {
 
   public void enableKeyboard(boolean b) {
     keyboardNav = b;
+  }
+
+  public void setBox(BlockSelectorBox b) {
+    box = b;
   }
 }

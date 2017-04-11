@@ -111,6 +111,7 @@ public final class BlockSelectorBox extends Box {
     drawerListeners = new ArrayList<BlockDrawerSelectionListener>();
 
     blockSelected = false;
+    sourceStructureExplorer.setBox(this);
 
     this.addKeyDownHandler(new KeyDownHandler() {
       @Override
@@ -124,22 +125,28 @@ public final class BlockSelectorBox extends Box {
             event.preventDefault();
             fireNextBlockInDrawerSelected();
           }
-        } else if(keyCode == KeyCodes.KEY_RIGHT) { //TODO: choose the actual key
+        } else if(keyCode == KeyCodes.KEY_RIGHT) {
           event.preventDefault();
           sourceStructureExplorer.enableKeyboard(false);
           sourceStructureExplorer.setFocus(false);
           fireFirstBlockInDrawerSelected();
           blockSelected = true;
         } else if(keyCode == KeyCodes.KEY_UP) {
-          event.preventDefault();
-          firePreviousBlockInDrawerSelected();
+          if(!blockSelected) {
+            event.preventDefault();
+            sourceStructureExplorer.setFocus(true);
+          } else {
+            event.preventDefault();
+            firePreviousBlockInDrawerSelected();
+          }
         } else if(keyCode == KeyCodes.KEY_ENTER) {
           event.preventDefault();
           fireAddSelectedBlockToWorkspace();
         } else if(keyCode == KeyCodes.KEY_ESCAPE) {
           event.preventDefault();
           sourceStructureExplorer.enableKeyboard(true);
-          sourceStructureExplorer.setFocus(true);
+          getElement().focus();
+          blockSelected = false;
         }
       }
     });
