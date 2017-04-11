@@ -296,15 +296,20 @@ Blockly.Keyboard.selectFirstField = function() {
 
   if(Blockly.Keyboard.fields.length > 0) {
     Blockly.Keyboard.fieldIndex = 0;
+    Blockly.Keyboard.selectCurrentField();
   }
 }
 
 Blockly.Keyboard.selectNextField = function() {
+  Blockly.Keyboard.unselectCurrentField();
   Blockly.Keyboard.fieldIndex = Blockly.Keyboard.wrapIncrement(Blockly.Keyboard.fields, Blockly.Keyboard.fieldIndex);
+  Blockly.Keyboard.selectCurrentField();
 }
 
 Blockly.Keyboard.selectPreviousField = function() {
+  Blockly.Keyboard.unselectCurrentField();
   Blockly.Keyboard.fieldIndex = Blockly.Keyboard.wrapDecrement(Blockly.Keyboard.fields, Blockly.Keyboard.fieldIndex);
+  Blockly.Keyboard.selectCurrentField();
 }
 
 Blockly.Keyboard.accessField = function() {
@@ -312,8 +317,19 @@ Blockly.Keyboard.accessField = function() {
 }
 
 Blockly.Keyboard.unselectField = function() {
+  Blockly.Keyboard.unselectCurrentField();
   Blockly.Keyboard.fields = [];
   Blockly.Keyboard.fieldIndex = -1;
+}
+
+Blockly.Keyboard.selectCurrentField = function() {
+  Blockly.Keyboard.fields[Blockly.Keyboard.fieldIndex].borderRect_.style.stroke = "#FFFFFF";
+  Blockly.Keyboard.fields[Blockly.Keyboard.fieldIndex].borderRect_.style.strokeWidth = "2";
+}
+
+Blockly.Keyboard.unselectCurrentField = function() {
+  Blockly.Keyboard.fields[Blockly.Keyboard.fieldIndex].borderRect_.style.stroke = "";
+  Blockly.Keyboard.fields[Blockly.Keyboard.fieldIndex].borderRect_.style.strokeWidth = "";
 }
 
 // --------------USEFUL FUNCTIONS--------------
@@ -321,11 +337,6 @@ Blockly.Keyboard.unselectField = function() {
 Blockly.Keyboard.unselectSelectedBlock = function() {
   Blockly.selected.unselect();
   Blockly.selected = null;
-}
-
-Blockly.Keyboard.unselectField = function() {
-  Blockly.Keyboard.fields = [];
-  Blockly.Keyboard.fieldIndex = -1;
 }
 
 Blockly.Keyboard.resetSelection = function() {
