@@ -260,7 +260,9 @@ Blockly.Keyboard.selectBlockToMove = function() {
 
     var selectedBlockConnection = blockToMove.outputConnection ? blockToMove.outputConnection : blockToMove.previousConnection;
     Blockly.Keyboard.possibleConnections = connections.filter(function(connection) {
-      return connection.canConnectWithReason_(selectedBlockConnection) == Blockly.Connection.CAN_CONNECT;
+      var isTargetConnection = connection.targetConnection == selectedBlockConnection;
+      var isDescendent = Blockly.Keyboard.isDescendent(connection.sourceBlock_, blockToMove);
+      return connection.canConnectWithReason_(selectedBlockConnection) == Blockly.Connection.CAN_CONNECT && !isTargetConnection && !isDescendent;
     });
 
     if(Blockly.Keyboard.possibleConnections.length > 0) {
@@ -370,5 +372,17 @@ Blockly.Keyboard.wrapDecrement = function(list, idx) {
     return list.length - 1;
   } else {
     return idx - 1;
+  }
+}
+
+Blockly.Keyboard.isDescendent = function(block1, block2) {
+  if(block2.childBlocks_.length == 0) {
+    return false;
+  } else if(block2.childBlocks_.indexOf(block1) != -1) {
+    return true;
+  } else {
+    block2.childBlocks_.forEach(function(childBlock) {
+      return Blockly.Keyboard.isDescendent(block1, childBlock);
+    });
   }
 }
