@@ -24,7 +24,7 @@ Blockly.Keyboard.connectionIndex = -1;
 Blockly.Keyboard.fields = [];
 Blockly.Keyboard.fieldIndex = -1;
 
-// Blockly.bindEvent_(document, 'keydown', null, Blockly.Keyboard.workspaceKeyboardInteraction);
+Blockly.Keyboard.keysDown = [];
 
 Blockly.Keyboard.workspaceKeyboardInteraction = function(e) {
 
@@ -47,15 +47,19 @@ Blockly.Keyboard.workspaceKeyboardInteraction = function(e) {
     SHIFT: 16
   };
 
+  Blockly.Keyboard.keysDown.push(keyCode);
+
   if(keyCode == keyCodes.DOWN) {
     if(Blockly.selected && !Blockly.Keyboard.blockToMove) { // if there is a selected block on the workspace
       Blockly.Keyboard.selectFirstBlockInNextLevel();
-    } else if(!Blockly.Keyboard.blockToMove) {
-      this.selectFirstBlockInWorkspace();
+      Blockly.Keyboard.unselectField();
+    } else if(!Blockly.Keyboard.blockToMove && Blockly.Keyboard.fieldIndex == -1) {
+      Blockly.Keyboard.selectFirstBlockInWorkspace();
     }
   } else if(keyCode == keyCodes.UP) {
     if(!Blockly.Keyboard.blockToMove) {
       Blockly.Keyboard.selectFirstBlockInPreviousLevel();
+      Blockly.Keyboard.unselectField();
     }
   } else if(keyCode == keyCodes.RIGHT) {
     if(Blockly.Keyboard.blockToMove) {
@@ -87,11 +91,31 @@ Blockly.Keyboard.workspaceKeyboardInteraction = function(e) {
     } else {
       Blockly.Keyboard.unselectField();
     }
-  } else if(keyCode == keyCodes.SHIFT) { // look at the fields
+  }
+}
+
+Blockly.Keyboard.checkKeyUp = function(e) {
+  var keyCode = e.keyCode;
+
+  var keyCodes = {
+    DOWN: 40,
+    UP: 38,
+    RIGHT: 39,
+    LEFT: 37,
+    ENTER: 13,
+    ESC: 27,
+    TAB: 9,
+    CTRL: 17,
+    U: 85
+  };
+
+  if(keyCode == keyCodes.U && Blockly.Keyboard.keysDown.indexOf(keyCodes.CTRL) != -1) {
     if(Blockly.Keyboard.fieldIndex == -1) {
       Blockly.Keyboard.selectFirstField();
     }
   }
+
+  Blockly.Keyboard.keysDown = [];
 }
 
 // --------------NAVIGATION AROUND BLOCKS WORKSPACE--------------
