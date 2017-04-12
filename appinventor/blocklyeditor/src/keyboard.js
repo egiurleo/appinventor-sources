@@ -47,6 +47,7 @@ Blockly.Keyboard.workspaceKeyboardInteraction = function(e) {
     SHIFT: 16
   };
 
+  Blockly.Keyboard.updateBlocksLevel();
   Blockly.Keyboard.keysDown.push(keyCode);
 
   if(keyCode == keyCodes.DOWN) {
@@ -352,11 +353,28 @@ Blockly.Keyboard.selectCurrentField = function() {
 }
 
 Blockly.Keyboard.unselectCurrentField = function() {
-  Blockly.Keyboard.fields[Blockly.Keyboard.fieldIndex].borderRect_.style.stroke = "";
-  Blockly.Keyboard.fields[Blockly.Keyboard.fieldIndex].borderRect_.style.strokeWidth = "";
+  if(Blockly.Keyboard.fieldIndex != -1) {
+    Blockly.Keyboard.fields[Blockly.Keyboard.fieldIndex].borderRect_.style.stroke = "";
+    Blockly.Keyboard.fields[Blockly.Keyboard.fieldIndex].borderRect_.style.strokeWidth = "";
+  }
 }
 
 // --------------USEFUL FUNCTIONS--------------
+
+Blockly.Keyboard.updateBlocksLevel = function() {
+  if(!Blockly.selected) {
+    Blockly.Keyboard.currentBlocksLevel = [];
+    Blockly.Keyboard.currentBlocksIndex = -1;
+  } else {
+    if(Blockly.selected.parentBlock_) {
+      Blockly.Keyboard.currentBlocksLevel = Blockly.selected.parentBlock_.childBlocks_;
+    } else {
+      Blockly.Keyboard.currentBlocksLevel = Blockly.mainWorkspace.getTopBlocks();
+    }
+
+    Blockly.Keyboard.currentBlocksIndex = Blockly.Keyboard.currentBlocksLevel.indexOf(Blockly.selected);
+  }
+}
 
 Blockly.Keyboard.unselectSelectedBlock = function() {
   Blockly.selected.unselect();

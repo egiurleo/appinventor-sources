@@ -111,6 +111,7 @@ public final class BlockSelectorBox extends Box {
     drawerListeners = new ArrayList<BlockDrawerSelectionListener>();
 
     blockSelected = false;
+
     sourceStructureExplorer.setBox(this);
 
     this.addKeyDownHandler(new KeyDownHandler() {
@@ -146,6 +147,9 @@ public final class BlockSelectorBox extends Box {
           event.preventDefault();
           sourceStructureExplorer.enableKeyboard(true);
           getElement().focus();
+          blockSelected = false;
+        } else if(keyCode == KeyCodes.KEY_TAB) {
+          sourceStructureExplorer.enableKeyboard(true);
           blockSelected = false;
         }
       }
