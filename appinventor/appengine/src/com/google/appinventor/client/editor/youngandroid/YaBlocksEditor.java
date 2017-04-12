@@ -442,8 +442,10 @@ public final class YaBlocksEditor extends FileEditor
         || !selectedDrawer.equals(instanceDrawer)) {
       blocksArea.showComponentBlocks(instanceName);
       selectedDrawer = instanceDrawer;
+      BlockSelectorBox.getBlockSelectorBox().flyoutOpen(true);
     } else {
       blocksArea.hideComponentBlocks();
+      BlockSelectorBox.getBlockSelectorBox().flyoutOpen(false);
       selectedDrawer = null;
     }
   }
@@ -460,9 +462,11 @@ public final class YaBlocksEditor extends FileEditor
         || !selectedDrawer.equals(builtinDrawer)) {
       blocksArea.showBuiltinBlocks(drawerName);
       selectedDrawer = builtinDrawer;
+      BlockSelectorBox.getBlockSelectorBox().flyoutOpen(true);
     } else {
       blocksArea.hideBuiltinBlocks();
       selectedDrawer = null;
+      BlockSelectorBox.getBlockSelectorBox().flyoutOpen(false);
     }
   }
 

@@ -295,6 +295,7 @@ public final class BlockSelectorBox extends Box {
   }
 
   private void fireBuiltinDrawerClosed(String drawerName) {
+    this.flyoutOpen(false);
     for (BlockDrawerSelectionListener listener : drawerListeners) {
       listener.onBuiltinDrawerClosed(drawerName);
     }

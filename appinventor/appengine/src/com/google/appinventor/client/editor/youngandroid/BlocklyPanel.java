@@ -1039,7 +1039,8 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
   private static native void doAddSelectedBlockToWorkspace(String formName) /*-{
     var flyout = $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_;
     if(flyout.selectedBlock != -1) {
-      flyout.placeNewBlock_(flyout.svgList[flyout.selectedBlock]);
+      var block = flyout.placeNewBlock_(flyout.svgList[flyout.selectedBlock]);
+      block.moveBy(100, 0);
     }
   }-*/;
 
