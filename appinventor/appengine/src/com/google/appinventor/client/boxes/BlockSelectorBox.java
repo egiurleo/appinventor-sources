@@ -87,6 +87,7 @@ public final class BlockSelectorBox extends Box {
   private List<BlockDrawerSelectionListener> drawerListeners;
 
   private boolean blockSelected;
+  private boolean flyoutOpen;
 
   /**
    * Return the singleton BlockSelectorBox box.
@@ -111,6 +112,7 @@ public final class BlockSelectorBox extends Box {
     drawerListeners = new ArrayList<BlockDrawerSelectionListener>();
 
     blockSelected = false;
+    flyoutOpen = false;
 
     sourceStructureExplorer.setBox(this);
 
@@ -127,11 +129,13 @@ public final class BlockSelectorBox extends Box {
             fireNextBlockInDrawerSelected();
           }
         } else if(keyCode == KeyCodes.KEY_RIGHT) {
-          event.preventDefault();
-          sourceStructureExplorer.enableKeyboard(false);
-          sourceStructureExplorer.setFocus(false);
-          fireFirstBlockInDrawerSelected();
-          blockSelected = true;
+          if(flyoutOpen) {
+            event.preventDefault();
+            sourceStructureExplorer.enableKeyboard(false);
+            sourceStructureExplorer.setFocus(false);
+            fireFirstBlockInDrawerSelected();
+            blockSelected = true;
+          }
         } else if(keyCode == KeyCodes.KEY_UP) {
           if(!blockSelected) {
             event.preventDefault();
@@ -324,6 +328,10 @@ public final class BlockSelectorBox extends Box {
     for (BlockDrawerSelectionListener listener : drawerListeners) {
       listener.onSelectedBlockAddedToWorkspace();
     }
+  }
+
+  public void flyoutOpen(boolean b) {
+    flyoutOpen = b;
   }
 
 }

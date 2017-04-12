@@ -70,6 +70,7 @@ public class SourceStructureExplorer extends Composite {
       public void onClose(CloseEvent<TreeItem> event) {
         TreeItem treeItem = event.getTarget();
         if (treeItem != null) {
+          box.flyoutOpen(false);
           Object userObject = treeItem.getUserObject();
           if (userObject instanceof SourceStructureExplorerItem) {
             SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;
@@ -83,6 +84,7 @@ public class SourceStructureExplorer extends Composite {
       public void onOpen(OpenEvent<TreeItem> event) {
         TreeItem treeItem = event.getTarget();
         if (treeItem != null) {
+          box.flyoutOpen(true);
           Object userObject = treeItem.getUserObject();
           if (userObject instanceof SourceStructureExplorerItem) {
             SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;
