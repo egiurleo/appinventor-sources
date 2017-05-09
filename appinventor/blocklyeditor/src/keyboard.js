@@ -257,6 +257,7 @@ Blockly.Keyboard.moveSelectedBlockToSelectedConnection = function () {
 
   if(Blockly.highlightedConnection_.targetConnection) {
     Blockly.highlightedConnection_.disconnect();
+    Blockly.highlightedConnection_.sourceBlock_.bumpNeighbours_();
   }
 
   selectedBlockConnection.connect(Blockly.highlightedConnection_);
