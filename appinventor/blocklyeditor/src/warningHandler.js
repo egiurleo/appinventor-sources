@@ -39,7 +39,6 @@ Blockly.WarningHandler.prototype.updateWarningErrorCount = function() {
     indicator.updateWarningAndErrorCount();
   }
 };
->>>>>>> remotes/ewpatton/feature/blockly-update
 
 //noinspection JSUnusedGlobalSymbols
 /**

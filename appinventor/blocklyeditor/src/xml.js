@@ -79,7 +79,6 @@ Blockly.Xml.domToWorkspaceHeadless = function(xml, workspace) {
   workspace.updateVariableList(false);
 };
 
->>>>>>> remotes/ewpatton/feature/blockly-update
 Blockly.Xml.domToWorkspace = (function(func) {
   if (func.isInstrumented) {
     return func;

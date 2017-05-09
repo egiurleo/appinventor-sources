@@ -31,9 +31,6 @@
     // Lyn's instrumentation code
     "./src/instrument.js",
 
-    // Emily's keyboard interactions
-    "./src/keyboard.js",
-
     //the rest of the blockly .js files can come in any order
 
     '../lib/blockly/core/block.js',
@@ -163,6 +160,9 @@
 
     // Repl
     "./src/replmgr.js"
+
+    // keyboard interactions
+    "./src/keyboard.js",
     ],
 
   // This must be specified because datetimesymbols.js from the Closure Library

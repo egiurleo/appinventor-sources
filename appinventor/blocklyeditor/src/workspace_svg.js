@@ -50,7 +50,6 @@ Blockly.WorkspaceSvg.prototype.typeBlock_ = null;
 Blockly.WorkspaceSvg.prototype.blocksNeedingRendering = null;
 
 /**
->>>>>>> remotes/ewpatton/feature/blockly-update
  * latest clicked position is used to open the type blocking suggestions window
  * Initial position is 0,0
  * @type {{x: number, y: number}}

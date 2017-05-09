@@ -333,10 +333,6 @@ Blockly.Backpack.prototype.hide = function() {
   this.flyout_.hide();
 };
 
-Blockly.Backpack.prototype.hide = function() {
-  this.flyout_.hide();
-};
-
 /**
  * Move the backpack to the top right corner.
  * @private
@@ -398,7 +394,6 @@ Blockly.Backpack.prototype.openBackpack = function() {
     }
     this.flyout_.show(newBackpack);
   }
-  */
 };
 
 /**
@@ -554,3 +549,4 @@ Blockly.Backpack.prototype.setContents = function(backpack, store) {
   Blockly.Backpack.shared_contents = backpack;
   if (store) window.parent.BlocklyPanel_storeBackpack(JSON.stringify(backpack));
 };
+
