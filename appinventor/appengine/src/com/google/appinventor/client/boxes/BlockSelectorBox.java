@@ -288,7 +288,6 @@ public final class BlockSelectorBox extends Box {
   }
 
   private void fireBuiltinDrawerClosed(String drawerName) {
-    this.flyoutOpen(false);
     for (BlockDrawerSelectionListener listener : drawerListeners) {
       listener.onBuiltinDrawerClosed(drawerName);
     }
@@ -329,8 +328,13 @@ public final class BlockSelectorBox extends Box {
     }
   }
 
-  public void flyoutOpen(boolean b) {
-    flyoutOpen = b;
+  /**
+   * Tell the sourceStructureExplorer whether the flyout is open or closed
+   *
+   * @param bool whether the flyout is open
+   */
+  public void updateFlyoutOpen(boolean bool) {
+    sourceStructureExplorer.updateFlyoutOpen(bool);
   }
 
 }

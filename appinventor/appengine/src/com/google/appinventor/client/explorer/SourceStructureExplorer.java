@@ -329,8 +329,7 @@ public class SourceStructureExplorer extends Composite {
    *
    * @param bool whether the flyout is open
    */
-  private void updateFlyoutOpen(boolean bool) {
-    Window.alert("flyout changed: " + bool.toString());
+  public void updateFlyoutOpen(boolean bool) {
     flyoutOpen = bool;
   }
 
