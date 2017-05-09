@@ -64,39 +64,39 @@ public class SourceStructureExplorer extends Composite {
          // TODO (egiurleo): maybe some of this stuff could be moved into the flyout code,
          //   but I'm not sure how to capture a keydown event there
 
-        switch(eventType) {
-          case Event.ONKEYDOWN:
-          int keyCode = event.getKeyCode();
-            if(keyCode == KeyCodes.KEY_RIGHT) {
-              if(flyoutOpen) {
-                blockSelectorBox.fireFirstBlockInDrawerSelected();
-                updateBlockSelected(true);
-              }
-            } else if(keyCode == KeyCodes.KEY_UP) {
-              if(blockSelected) {
-                blockSelectorBox.firePreviousBlockInDrawerSelected();
-              }
-            } else if(keyCode == KeyCodes.KEY_DOWN) {
-              if(blockSelected) {
-                blockSelectorBox.fireNextBlockInDrawerSelected();
-              }
-            } else if(keyCode == KeyCodes.KEY_LEFT || keyCode == KeyCodes.KEY_ESCAPE || keyCode == KeyCodes.KEY_TAB) {
-              if(flyoutOpen) {
-                updateBlockSelected(false);
-                updateFlyoutOpen(false);
-                blockSelectorBox.fireBuiltinDrawerClosed();
-                break;
-              }
-            } else if(keyCode == KeyCodes.KEY_ENTER) {
-              if(blockSelected) {
-                blockSelectorBox.fireAddSelectedBlockToWorkspace();
-              }
-            }
-            super.onBrowserEvent(event);
-            break;
-          default:
-            super.onBrowserEvent(event);
-        }
+        // switch(eventType) {
+        //   case Event.ONKEYDOWN:
+        //   int keyCode = event.getKeyCode();
+        //     if(keyCode == KeyCodes.KEY_RIGHT) {
+        //       if(flyoutOpen) {
+        //         blockSelectorBox.fireFirstBlockInDrawerSelected();
+        //         updateBlockSelected(true);
+        //       }
+        //     } else if(keyCode == KeyCodes.KEY_UP) {
+        //       if(blockSelected) {
+        //         blockSelectorBox.firePreviousBlockInDrawerSelected();
+        //       }
+        //     } else if(keyCode == KeyCodes.KEY_DOWN) {
+        //       if(blockSelected) {
+        //         blockSelectorBox.fireNextBlockInDrawerSelected();
+        //       }
+        //     } else if(keyCode == KeyCodes.KEY_LEFT || keyCode == KeyCodes.KEY_ESCAPE || keyCode == KeyCodes.KEY_TAB) {
+        //       if(flyoutOpen) {
+        //         updateBlockSelected(false);
+        //         updateFlyoutOpen(false);
+        //         blockSelectorBox.fireBuiltinDrawerClosed();
+        //         break;
+        //       }
+        //     } else if(keyCode == KeyCodes.KEY_ENTER) {
+        //       if(blockSelected) {
+        //         blockSelectorBox.fireAddSelectedBlockToWorkspace();
+        //       }
+        //     }
+        //     super.onBrowserEvent(event);
+        //     break;
+        //   default:
+        //     super.onBrowserEvent(event);
+        // }
       }
     };
     tree.getElement().setId("source-structure-explorer-tree");

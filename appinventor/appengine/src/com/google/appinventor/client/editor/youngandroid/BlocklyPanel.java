@@ -62,88 +62,8 @@ public class BlocklyPanel extends HTMLPanel {
     public void initBlockly();
   }
 
-<<<<<<< HEAD
-  private static class LoadStatus {
-    public boolean complete = false; // true if loading blocks completed
-    public boolean error = false;     // true if got an error loading blocks
-  }
-
-  private final SimpleComponentDatabase COMPONENT_DATABASE;
-
-  private static final String EDITOR_HTML =
-    "<style>\n" +
-    ".svg {\n" +
-    "  height: 100%;\n" +
-    "  width: 100%;\n" +
-    "  border: solid black 1px;\n" +
-    "}\n" +
-    "</style>\n" +
-    "<iframe src=\"blocklyframe.html#FORM_NAME\" class=\"svg\" id=\"blocklyframe\">";
-
-  // Keep track of component additions/removals/renames that happen before
-  // blocks editor is inited for the first time, or before reinitialization
-  // after the blocks editor's project has been detached from the document.
-  // Replay them in order after initialized. Keys are form names. If there is
-  // an entry for a given form name in the map, its blocks have not yet been
-  // (re)inited.
-  // Note: Javascript is single-threaded. Since this code is compiled by GWT
-  // into Javascript, we don't need to worry about concurrent access to
-  // this map.
-  private static Map<String, List<ComponentOp>> componentOps = Maps.newHashMap();
-
-  // When a user switches projects, the ProjectEditor widget gets detached
-  // from the main document in the browser. If the user switches back to a
-  // previously open project (in the same session), when the ProjectEditor
-  // widget gets reattached, all of its FileEditors in its deckPanel get
-  // reloaded, causing the Blockly objects for the blocks editors
-  // to be created anew. Since the FileEditor Java objects themselves are
-  // not recreated, we need to reconstruct the set of components in the Blockly
-  // object when the object gets recreated. For each form, we keep track of the
-  // components currently in that form, stored as "add" operations that can be
-  // replayed to restore those components when the underlying Blockly state
-  // is re-inited. This component state is updated as components are added,
-  // removed, and renamed. The outer map is keyed by form name, and the
-  // inner map is keyed by component uid.
-  private static final Map<String, Map<String, ComponentOp>> currentComponents = Maps.newHashMap();
-
-  // Pending blocks file content, indexed by form name. Waiting to be loaded when the corresponding
-  // blocks area is initialized.
-  private static final Map<String, String> pendingBlocksContentMap = Maps.newHashMap();
-
-  // [lyn, 2014/10/27] added formJson for upgrading
-  // Pending form JSON content, indexed by form name. Waiting to be loaded when the corresponding
-  // blocks area is initialized.
-  private static final Map<String, String> pendingFormJsonMap = Maps.newHashMap();
-
-  // Status of blocks loading, indexed by form name.
-  private static final Map<String, LoadStatus> loadStatusMap = Maps.newHashMap();
-
-  // Blockly backpack
-  private static String backpack = "[]";
-
-  // My form name
-  private String formName;
-
-  // My blocks editor
-  private YaBlocksEditor myBlocksEditor;  // [lyn, 2014/10/28] Added to access current form json
-
-  public static boolean isWarningVisible = false;
-
-  public BlocklyPanel(YaBlocksEditor blocksEditor, String formName) {
-    super(EDITOR_HTML.replace("FORM_NAME", formName));
-    this.formName = formName;
-    this.myBlocksEditor = blocksEditor;
-    COMPONENT_DATABASE = SimpleComponentDatabase.getInstance(blocksEditor.getProjectId());
-    componentOps.put(formName, new ArrayList<ComponentOp>());
-    // note: using Maps.newHashMap() gives a type error in Eclipse in the following line
-    currentComponents.put(formName, new HashMap<String, ComponentOp>());
-    initJS();
-    OdeLog.log("Created BlocklyPanel for " + formName);
-  }
-=======
   private static final String EDITOR_HTML = "<div id=\"FORM_NAME\" class=\"svg\" tabindex=\"-1\"></div>";
   private static final NativeTranslationMap SIMPLE_COMPONENT_TRANSLATIONS;
->>>>>>> remotes/ewpatton/feature/blockly-update
 
   static {
     ((BlocklySource) GWT.create(BlocklySource.class)).initBlockly();
@@ -253,59 +173,10 @@ public class BlocklyPanel extends HTMLPanel {
    *
    * @param event Native JavaScript event object with additional details.
    */
-<<<<<<< HEAD
-  public void hideGenericBlocks() {
-    if (blocksInited(formName)) {
-      doHideBlocks(formName);
-    }
-  }
-
-  /**
-   * Select the first block in the drawer
-   */
-  public void selectFirstBlockInDrawer() {
-    if(blocksInited(formName)) {
-      doSelectFirstBlockInDrawer(formName);
-    }
-  }
-
-  public void selectNextBlockInDrawer() {
-    if(blocksInited(formName)) {
-      doSelectNextBlockInDrawer(formName);
-    }
-  }
-
-  public void selectPreviousBlockInDrawer() {
-    if(blocksInited(formName)) {
-      doSelectPreviousBlockInDrawer(formName);
-    }
-  }
-
-  /**
-   * Add the selected block to the workspace
-   */
-  public void addSelectedBlockToWorkspace() {
-    if(blocksInited(formName)) {
-      doAddSelectedBlockToWorkspace(formName);
-    }
-  }
-
-  /**
-   * Pass on a keycode to the Blockly workspace for keyboard interactions
-   */
-  public void selectFirstBlockInWorkspace() {
-    doSelectFirstBlockInWorkspace(formName);
-  }
-
-  public void renderBlockly() {
-    if (blocksInited(formName)) {
-      doRenderBlockly(formName);
-=======
   private void workspaceChanged(JavaScriptObject event) {
     // ignore workspaceChanged events until after the load finishes
     if (!loadComplete) {
       return;
->>>>>>> remotes/ewpatton/feature/blockly-update
     }
     if (loadError) {
       YaBlocksEditor.setBlocksDamaged(formName);
@@ -716,18 +587,6 @@ public class BlocklyPanel extends HTMLPanel {
     Blockly.ai_inject(el, this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace);
   }-*/;
 
-<<<<<<< HEAD
-  native void callBlocklyInit(String formName) /*-{
-    var editor = this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::myBlocksEditor;
-    $wnd.Blocklies[formName].init($entry(function() {
-      editor.@com.google.appinventor.client.editor.youngandroid.YaBlocksEditor::onInitialized()();
-    }));
-  }-*/;
-
-  private static native void doAddComponent(String formName, String typeDescription,
-                                            String instanceName, String uid) /*-{
-    $wnd.Blocklies[formName].Component.add(instanceName, uid);
-=======
   /**
    * Make the workspace associated with the BlocklyPanel the main workspace.
    */
@@ -736,7 +595,6 @@ public class BlocklyPanel extends HTMLPanel {
     // Trigger a screen switch to send new YAIL.
     var parts = Blockly.mainWorkspace.formName.split(/_/);
     Blockly.mainWorkspace.fireChangeListener(new AI.Events.ScreenSwitch(parts[0], parts[1]));
->>>>>>> remotes/ewpatton/feature/blockly-update
   }-*/;
 
   // [lyn, 2014/10/27] added formJson for upgrading
@@ -763,89 +621,6 @@ public class BlocklyPanel extends HTMLPanel {
       .saveBlocksFile();
   }-*/;
 
-<<<<<<< HEAD
-  private static native void doShowComponentBlocks(String formName, String name) /*-{
-    $wnd.Blocklies[formName].getMainWorkspace().drawer_.showComponent(name);
-  }-*/;
-
-  public static native void doHideComponentBlocks(String formName) /*-{
-    $wnd.Blocklies[formName].getMainWorkspace().drawer_.hide();
-    $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_.selectedBlock = -1;
-  }-*/;
-
-  private static native void doShowBuiltinBlocks(String formName, String drawerName) /*-{
-    var myBlockly = $wnd.Blocklies[formName];
-    myBlockly.getMainWorkspace().drawer_.hide();
-    myBlockly.getMainWorkspace().drawer_.showBuiltin(drawerName);
-  }-*/;
-
-  public static native void doHideBlocks(String formName) /*-{
-    $wnd.Blocklies[formName].getMainWorkspace().drawer_.hide();
-    $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_.selectedBlock = -1;
-  }-*/;
-
-  private static native void doShowGenericBlocks(String formName, String drawerName) /*-{
-    var myBlockly = $wnd.Blocklies[formName];
-    myBlockly.getMainWorkspace().drawer_.hide();
-    myBlockly.getMainWorkspace().drawer_.showGeneric(drawerName);
-  }-*/;
-
-  private static native void doSelectFirstBlockInDrawer(String formName) /*-{
-    var selectedBlock = $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_.selectedBlock;
-    if(selectedBlock == -1) {
-      $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_.svgList[0].addSelect();
-      $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_.selectedBlock = 0;
-    }
-
-  }-*/;
-
-  private static native void doSelectNextBlockInDrawer(String formName) /*-{
-    var flyout = $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_;
-
-    if(flyout.selectedBlock != -1) {
-      flyout.svgList[flyout.selectedBlock].removeSelect();
-
-      var newBlockNumber = 0;
-      if(flyout.selectedBlock != flyout.svgList.length - 1) { // if it's the last block, select the first
-        newBlockNumber = flyout.selectedBlock + 1;
-      }
-
-      flyout.svgList[newBlockNumber].addSelect();
-      flyout.selectedBlock = newBlockNumber;
-    }
-  }-*/;
-
-  private static native void doSelectPreviousBlockInDrawer(String formName) /*-{
-    var flyout = $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_;
-
-    if(flyout.selectedBlock != -1) {
-      flyout.svgList[flyout.selectedBlock].removeSelect();
-
-      var newBlockNumber = flyout.svgList.length - 1;
-      if(flyout.selectedBlock != 0) { // if it's the first block, select the last
-        newBlockNumber = flyout.selectedBlock - 1;
-      }
-
-      flyout.svgList[newBlockNumber].addSelect();
-      flyout.selectedBlock = newBlockNumber;
-    }
-  }-*/;
-
-  private static native void doAddSelectedBlockToWorkspace(String formName) /*-{
-    var flyout = $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_;
-    if(flyout.selectedBlock != -1) {
-      var block = flyout.placeNewBlock_(flyout.svgList[flyout.selectedBlock]);
-      block.moveBy(100, 0);
-    }
-  }-*/;
-
-  private static native void doSelectFirstBlockInWorkspace(String formName) /*-{
-    $wnd.Blocklies[formName].Keyboard.selectFirstBlockInWorkspace();
-  }-*/;
-
-  public static native boolean doDrawerShowing(String formName) /*-{
-    return $wnd.Blocklies[formName].getMainWorkspace().drawer_.isShowing();
-=======
   /**
    * Add a component to the blocks workspace
    *
@@ -913,7 +688,6 @@ public class BlocklyPanel extends HTMLPanel {
     this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
       .hideDrawer()
       .showGeneric(drawerName);
->>>>>>> remotes/ewpatton/feature/blockly-update
   }-*/;
 
   /**

@@ -262,35 +262,35 @@ public final class BlockSelectorBox extends Box {
 
   // TODO (egiurleo): I'm unhappy that these methods are in BlockSelectorBox but are being
   //    called from sourceStructureExplorer; will figure out a way to fix that
-  public void fireBuiltinDrawerClosed() {
-    for (BlockDrawerSelectionListener listener : drawerListeners) {
-      listener.onBuiltinDrawerClosed();
-    }
-  }
-
-  public void fireFirstBlockInDrawerSelected() {
-    for (BlockDrawerSelectionListener listener : drawerListeners) {
-      listener.onFirstBlockInDrawerSelected();
-    }
-  }
-
-  public void fireNextBlockInDrawerSelected() {
-    for (BlockDrawerSelectionListener listener : drawerListeners) {
-      listener.onSelectNextBlockInDrawer();
-    }
-  }
-
-  public void firePreviousBlockInDrawerSelected() {
-    for (BlockDrawerSelectionListener listener : drawerListeners) {
-      listener.onSelectPreviousBlockInDrawer();
-    }
-  }
-
-  public void fireAddSelectedBlockToWorkspace() {
-    for (BlockDrawerSelectionListener listener : drawerListeners) {
-      listener.onSelectedBlockAddedToWorkspace();
-    }
-  }
+  // public void fireBuiltinDrawerClosed() {
+  //   for (BlockDrawerSelectionListener listener : drawerListeners) {
+  //     listener.onBuiltinDrawerClosed();
+  //   }
+  // }
+  //
+  // public void fireFirstBlockInDrawerSelected() {
+  //   for (BlockDrawerSelectionListener listener : drawerListeners) {
+  //     listener.onFirstBlockInDrawerSelected();
+  //   }
+  // }
+  //
+  // public void fireNextBlockInDrawerSelected() {
+  //   for (BlockDrawerSelectionListener listener : drawerListeners) {
+  //     listener.onSelectNextBlockInDrawer();
+  //   }
+  // }
+  //
+  // public void firePreviousBlockInDrawerSelected() {
+  //   for (BlockDrawerSelectionListener listener : drawerListeners) {
+  //     listener.onSelectPreviousBlockInDrawer();
+  //   }
+  // }
+  //
+  // public void fireAddSelectedBlockToWorkspace() {
+  //   for (BlockDrawerSelectionListener listener : drawerListeners) {
+  //     listener.onSelectedBlockAddedToWorkspace();
+  //   }
+  // }
 
   /**
    * Tell the sourceStructureExplorer whether the flyout is open or closed

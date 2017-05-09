@@ -447,21 +447,21 @@ public final class YaBlocksEditor extends FileEditor
     blocksArea.hideDrawer();
   }
 
-  public void selectFirstBlockInDrawer() {
-    blocksArea.selectFirstBlockInDrawer();
-  }
-
-  public void selectNextBlockInDrawer() {
-    blocksArea.selectNextBlockInDrawer();
-  }
-
-  public void selectPreviousBlockInDrawer() {
-    blocksArea.selectPreviousBlockInDrawer();
-  }
-
-  public void addSelectedBlockToWorkspace() {
-    blocksArea.addSelectedBlockToWorkspace();
-  }
+  // public void selectFirstBlockInDrawer() {
+  //   blocksArea.selectFirstBlockInDrawer();
+  // }
+  //
+  // public void selectNextBlockInDrawer() {
+  //   blocksArea.selectNextBlockInDrawer();
+  // }
+  //
+  // public void selectPreviousBlockInDrawer() {
+  //   blocksArea.selectPreviousBlockInDrawer();
+  // }
+  //
+  // public void addSelectedBlockToWorkspace() {
+  //   blocksArea.addSelectedBlockToWorkspace();
+  // }
 
   public MockForm getForm() {
     YaProjectEditor yaProjectEditor = (YaProjectEditor) projectEditor;
@@ -570,13 +570,13 @@ public final class YaBlocksEditor extends FileEditor
     }
   }
 
-  @Override
-  public void onBuiltinDrawerClosed() {
-    if (Ode.getInstance().getCurrentFileEditor() == this) {
-      hideBuiltinBlocks();
-    }
-  }
-
+  // @Override
+  // public void onBuiltinDrawerClosed() {
+  //   if (Ode.getInstance().getCurrentFileEditor() == this) {
+  //     hideBuiltinBlocks();
+  //   }
+  // }
+  //
   /*
    * @see com.google.appinventor.client.editor.youngandroid.BlockDrawerSelectionListener#
    * onBlockDrawerSelected(java.lang.String)
@@ -588,54 +588,54 @@ public final class YaBlocksEditor extends FileEditor
       showGenericBlocks(drawerName);
     }
   }
-
-  /*
-   * @see com.google.appinventor.client.editor.youngandroid.BlockDrawerSelectionListener#
-   * onFirstBlockInDrawerSelected()
-   */
-  @Override
-  public void onFirstBlockInDrawerSelected() {
-    // Only do something if we are the current file editor
-    if (Ode.getInstance().getCurrentFileEditor() == this) {
-      selectFirstBlockInDrawer();
-    }
-  }
-
-  /*
-   * @see com.google.appinventor.client.editor.youngandroid.BlockDrawerSelectionListener#
-   * onSelectNextBlockInDrawer()
-   */
-  @Override
-  public void onSelectNextBlockInDrawer() {
-    // Only do something if we are the current file editor
-    if (Ode.getInstance().getCurrentFileEditor() == this) {
-      selectNextBlockInDrawer();
-    }
-  }
-
-  /*
-   * @see com.google.appinventor.client.editor.youngandroid.BlockDrawerSelectionListener#
-   * onSelectPreviousBlockInDrawer()
-   */
-  @Override
-  public void onSelectPreviousBlockInDrawer() {
-    // Only do something if we are the current file editor
-    if (Ode.getInstance().getCurrentFileEditor() == this) {
-      selectPreviousBlockInDrawer();
-    }
-  }
-
-  /*
-   * @see com.google.appinventor.client.editor.youngandroid.BlockDrawerSelectionListener#
-   * onSelectedBlockAddedToWorkspace()
-   */
-  @Override
-  public void onSelectedBlockAddedToWorkspace() {
-    // Only do something if we are the current file editor
-    if (Ode.getInstance().getCurrentFileEditor() == this) {
-      addSelectedBlockToWorkspace();
-    }
-  }
+  //
+  // /*
+  //  * @see com.google.appinventor.client.editor.youngandroid.BlockDrawerSelectionListener#
+  //  * onFirstBlockInDrawerSelected()
+  //  */
+  // @Override
+  // public void onFirstBlockInDrawerSelected() {
+  //   // Only do something if we are the current file editor
+  //   if (Ode.getInstance().getCurrentFileEditor() == this) {
+  //     selectFirstBlockInDrawer();
+  //   }
+  // }
+  //
+  // /*
+  //  * @see com.google.appinventor.client.editor.youngandroid.BlockDrawerSelectionListener#
+  //  * onSelectNextBlockInDrawer()
+  //  */
+  // @Override
+  // public void onSelectNextBlockInDrawer() {
+  //   // Only do something if we are the current file editor
+  //   if (Ode.getInstance().getCurrentFileEditor() == this) {
+  //     selectNextBlockInDrawer();
+  //   }
+  // }
+  //
+  // /*
+  //  * @see com.google.appinventor.client.editor.youngandroid.BlockDrawerSelectionListener#
+  //  * onSelectPreviousBlockInDrawer()
+  //  */
+  // @Override
+  // public void onSelectPreviousBlockInDrawer() {
+  //   // Only do something if we are the current file editor
+  //   if (Ode.getInstance().getCurrentFileEditor() == this) {
+  //     selectPreviousBlockInDrawer();
+  //   }
+  // }
+  //
+  // /*
+  //  * @see com.google.appinventor.client.editor.youngandroid.BlockDrawerSelectionListener#
+  //  * onSelectedBlockAddedToWorkspace()
+  //  */
+  // @Override
+  // public void onSelectedBlockAddedToWorkspace() {
+  //   // Only do something if we are the current file editor
+  //   if (Ode.getInstance().getCurrentFileEditor() == this) {
+  //     addSelectedBlockToWorkspace();
+  //   }
+  // }
 
   /*
    * Start up the Repl (call into the Blockly.ReplMgr via the BlocklyPanel.

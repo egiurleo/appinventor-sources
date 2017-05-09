@@ -67,7 +67,7 @@ public class ViewerBox extends Box {
         if(keyCode == KeyCodes.KEY_DOWN) {
           getElement().blur();
           DOM.getElementById("blocklyframe").focus();
-          blocksArea.selectFirstBlockInWorkspace();
+          // blocksArea.selectFirstBlockInWorkspace();
         }
 
       }
