@@ -26,7 +26,7 @@ Blockly.Instrument.isOn = false; // [lyn, 04/08/14] Turn off for production
 /** Turn instrumentation on/off */
 Blockly.Instrument.setOn = function (bool) {
   Blockly.Instrument.isOn = bool;
-}
+};
 
 /** The following are global flags to control rendering.
  * The default settings give the best performance.

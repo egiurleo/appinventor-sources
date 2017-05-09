@@ -132,5 +132,15 @@ Blockly.Block.prototype.interpolateMsg = function(msg, var_args) {
   this.setInputsInline(!msg.match(this.interpolateMsg.INLINE_REGEX_));
 };
 
+/**
+ Unplug this block from every block connected to it.
+ */
+Blockly.Block.prototype.isolate = function(healStack) {
+  this.unplug(healStack);
+  for (var x = this.childBlocks_.length - 1; x >= 0; x--) {
+    this.childBlocks_[x].unplug(healStack);
+  }
+};
+
 Blockly.Block.prototype.interpolateMsg.SPLIT_REGEX_ = /(%\d+|\n)/;
 Blockly.Block.prototype.interpolateMsg.INLINE_REGEX_ = /%1\s*$/;

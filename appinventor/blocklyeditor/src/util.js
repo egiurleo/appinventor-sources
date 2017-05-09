@@ -88,11 +88,12 @@ Blockly.convertCoordinates = function(workspace, x, y, toSvg) {
  * Return the absolute coordinates of the top-left corner of this element.
  * The origin (0,0) is the top-left corner of the page body.
  * @param {!Element} element Element to find the coordinates of.
+ * @param {!Blockly.Workspace} workspace Source workspace to use as a reference frame.
  * @return {!Object} Object with .x and .y properties.
  * @private
  */
 Blockly.getAbsoluteXY_ = function(element, workspace) {
-  var xy = Blockly.getSvgXY_(element, workspace);
+  var xy = workspace.getSvgXY(element);
   return Blockly.convertCoordinates(workspace, xy.x, xy.y, false);
 };
 

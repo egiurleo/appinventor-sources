@@ -44,7 +44,7 @@ Blockly.Flydown.prototype.VERTICAL_SEPARATION_FACTOR = 1;
 
 /**
  * Creates the flydown's DOM.  Only needs to be called once.  Overrides the flyout createDom method.
- * @param {!String} cssClassName The name of the CSS class for this flydown. 
+ * @param {!String} cssClassName The name of the CSS class for this flydown.
  * @return {!Element} The flydown's SVG group.
  */
 Blockly.Flydown.prototype.createDom = function(cssClassName) {
@@ -55,8 +55,8 @@ Blockly.Flydown.prototype.createDom = function(cssClassName) {
   </g>
   */
   this.previousCSSClassName_ = cssClassName; // Remember class name for later
-  this.svgGroup_ = Blockly.createSvgElement('g', {'class': cssClassName}, null);
-  this.svgBackground_ = Blockly.createSvgElement('path', {}, this.svgGroup_);
+  this.svgGroup_ = Blockly.utils.createSvgElement('g', {'class': cssClassName}, null);
+  this.svgBackground_ = Blockly.utils.createSvgElement('path', {}, this.svgGroup_);
   this.svgGroup_.appendChild(this.workspace_.createDom());
   return this.svgGroup_;
 };
@@ -67,8 +67,8 @@ Blockly.Flydown.prototype.createDom = function(cssClassName) {
  */
 Blockly.Flydown.prototype.setCSSClass = function(newCSSClassName) {
   if (newCSSClassName !== this.previousCSSClassName_) {
-    Blockly.removeClass_(this.svgGroup_, this.previousCSSClassName_);
-    Blockly.addClass_(this.svgGroup_, newCSSClassName);
+    Blockly.utils.removeClass(this.svgGroup_, this.previousCSSClassName_);
+    Blockly.utils.addClass(this.svgGroup_, newCSSClassName);
     this.previousCSSClassName_ = newCSSClassName;
   }
 }
@@ -97,7 +97,12 @@ Blockly.Flydown.prototype.position = function() {
  * @param {!num} y y-position of upper-left corner of flydown
  */
 Blockly.Flydown.prototype.showAt = function(xmlList,x,y) {
-  this.show(xmlList); // invoke flyout method, which adds blocks to flydown and calculates width and height.
+  Blockly.Events.disable();
+  try {
+    this.show(xmlList); // invoke flyout method, which adds blocks to flydown and calculates width and height.
+  } finally {
+    Blockly.Events.enable();
+  }
   // this.svgGroup_.setAttribute('transform', 'translate(' + x + ',' + y + ')');
   // Calculate path around flydown blocks. Based on code in flyout position_ method.
 
@@ -184,7 +189,7 @@ Blockly.Flydown.prototype.placeNewBlock_ = function(originBlock) {
   // left corner of the main workspace.
   var scale = this.workspace_.scale;
   var margin = this.CORNER_RADIUS * scale;
-  var xyOld = Blockly.getSvgXY_(svgRootOld, this.workspace_);
+  var xyOld = this.workspace_.getSvgXY(svgRootOld);
   //var scrollX = this.svgGroup_.getScreenCTM().e + margin;
   var scrollX = xyOld.x;
   xyOld.x += scrollX / targetWorkspace.scale - scrollX;
@@ -204,8 +209,8 @@ Blockly.Flydown.prototype.placeNewBlock_ = function(originBlock) {
   // upper left corner of the workspace.  This may not be the same as the
   // original block because the flyout's origin may not be the same as the
   // main workspace's origin.
-  var xyNew = Blockly.getSvgXY_(svgRootNew, targetWorkspace);
-  // Scale the scroll (getSvgXY_ did not do this).
+  var xyNew = targetWorkspace.getSvgXY(svgRootNew);
+  // Scale the scroll (getSvgXY did not do this).
   xyNew.x +=
       targetWorkspace.scrollX / targetWorkspace.scale - targetWorkspace.scrollX;
   xyNew.y +=

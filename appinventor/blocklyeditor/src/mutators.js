@@ -54,7 +54,7 @@ Blockly.domToMutation = function(container) {
 Blockly.decompose =  function(workspace,itemBlockName,block) {
   var containerBlockName = 'mutator_container';
   //var itemBlockName = 'mutator_item';
-  var containerBlock = new Blockly.Block.obtain(workspace,containerBlockName);
+  var containerBlock = workspace.newBlock(containerBlockName);
   containerBlock.setColour(block.getColour());
   if(block.updateContainerBlock != null){
     block.updateContainerBlock(containerBlock);
@@ -62,7 +62,7 @@ Blockly.decompose =  function(workspace,itemBlockName,block) {
   containerBlock.initSvg();
   var connection = containerBlock.getInput('STACK').connection;
   for (var x = 0; x < block.itemCount_; x++) {
-    var itemBlock = new Blockly.Block.obtain(workspace, itemBlockName);
+    var itemBlock = workspace.newBlock(itemBlockName);
     itemBlock.initSvg();
     connection.connect(itemBlock.previousConnection);
     connection = itemBlock.nextConnection;

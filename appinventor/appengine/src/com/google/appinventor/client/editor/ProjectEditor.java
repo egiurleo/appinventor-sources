@@ -7,6 +7,7 @@
 package com.google.appinventor.client.editor;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.Settings;
@@ -236,7 +237,11 @@ public abstract class ProjectEditor extends Composite {
     String currentValue = settings.getPropertyValue(name);
     if (!newValue.equals(currentValue)) {
       settings.changePropertyValue(name, newValue);
-      Ode.getInstance().getEditorManager().scheduleAutoSave(projectSettings);
+      if (!isLoadingScreen1()) {
+        // Project settings are only changeable after Screen1 is loaded
+        // Don't trigger a save because this change is triggered due to loading
+        Ode.getInstance().getEditorManager().scheduleAutoSave(projectSettings);
+      }
     }
   }
 
@@ -318,5 +323,16 @@ public abstract class ProjectEditor extends Composite {
     OdeLog.log("ProjectEditor: got onUnload for project " + projectId);
     super.onUnload();
     onHide();
+  }
+
+  private boolean isLoadingScreen1() {
+    if (selectedFileEditor == null) {
+      return true;
+    } else if (selectedFileEditor instanceof SimpleEditor) {
+      SimpleEditor editor = (SimpleEditor) selectedFileEditor;
+      return editor.isScreen1() && !editor.isLoadComplete();
+    } else {
+      return false;
+    }
   }
 }

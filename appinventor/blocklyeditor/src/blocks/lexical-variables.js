@@ -380,13 +380,13 @@ Blockly.Blocks['local_declaration_statement'] = {
   },
   decompose: function(workspace) {
     // Create "mutator" editor populated with name blocks with local variable names
-    var containerBlock = new Blockly.Block.obtain(workspace, 'local_mutatorcontainer');
+    var containerBlock = workspace.newBlock('local_mutatorcontainer');
     containerBlock.initSvg();
     containerBlock.setDefBlock(this);
     var connection = containerBlock.getInput('STACK').connection;
     for (var i = 0; i < this.localNames_.length; i++) {
       var localName = this.getFieldValue('VAR' + i);
-      var nameBlock = new Blockly.Block.obtain(workspace, 'local_mutatorarg');
+      var nameBlock = workspace.newBlock('local_mutatorarg');
       nameBlock.initSvg();
       nameBlock.setFieldValue(localName, 'NAME');
       // Store the old location.

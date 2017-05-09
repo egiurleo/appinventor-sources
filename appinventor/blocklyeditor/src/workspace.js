@@ -126,37 +126,6 @@ Blockly.Workspace.prototype.getAllBlocks = function() {
   return blocks;
 };
 
-// Override Blockly's render with optimized version from lyn
-Blockly.Workspace.prototype.render = function() {
-  var start = new Date().getTime();
-  // [lyn, 04/08/14] Get both top and all blocks for stats
-  var topBlocks = this.getTopBlocks();
-  var allBlocks = this.getAllBlocks();
-  if (Blockly.Instrument.useRenderDown) {
-    for (var t = 0, topBlock; topBlock = topBlocks[t]; t++) {
-      Blockly.Instrument.timer(
-          function () { topBlock.renderDown(); },
-          function (result, timeDiffInner) {
-            Blockly.Instrument.stats.renderDownTime += timeDiffInner;
-          }
-      );
-    }
-  } else {
-    var renderList = allBlocks;
-    for (var x = 0, block; block = renderList[x]; x++) {
-      if (!block.getChildren().length) {
-        block.render();
-      }
-      }
-    }
-  var stop = new Date().getTime();
-  var timeDiffOuter = stop - start;
-  Blockly.Instrument.stats.blockCount = allBlocks.length;
-  Blockly.Instrument.stats.topBlockCount = topBlocks.length;
-  Blockly.Instrument.stats.workspaceRenderCalls++;
-  Blockly.Instrument.stats.workspaceRenderTime += timeDiffOuter;
-};
-
 Blockly.Workspace.prototype.dispose = (function(func) {
     if (func.isWrapped) {
       return func;

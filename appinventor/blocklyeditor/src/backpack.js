@@ -25,7 +25,7 @@
  *
  * This is called from BlocklyPanel.
  *
- *  Backpack contents are stored in Blockly.backpack_
+ *  Backpack contents are stored in Blockly.Backpack.shared_contents.
  *
  * @author fraser@google.com (Neil Fraser)
  * @author ram8647@gmail.com (Ralph Morelli)
@@ -41,7 +41,7 @@ goog.require('AI.Blockly.Util');
 
 /**
  * Class for a backpack.
- * @param {!Blockly.Workspace} targetWorkspace The Workspace that
+ * @param {!Blockly.WorkspaceSvg} targetWorkspace The Workspace that
  * receives blocks from the backpack.
  * @param {(Blockly.Options|Object)=} [opt_options={}] Options for the
  * Backpack's flyout workspace.
@@ -63,7 +63,7 @@ Blockly.Backpack = function(targetWorkspace, opt_options) {
  * @type {string}
  * @private
  */
-Blockly.Backpack.prototype.BPACK_CLOSED_ = 'media/backpack-closed.png';
+Blockly.Backpack.prototype.BPACK_CLOSED_ = 'assets/backpack-closed.png';
 
 /**
  * URL of the small backpack image.
@@ -71,14 +71,14 @@ Blockly.Backpack.prototype.BPACK_CLOSED_ = 'media/backpack-closed.png';
  * @private
  */
 //Blockly.Backpack.prototype.BPACK_EMPTY_ = 'media/backpack-small-highlighted.png';
-Blockly.Backpack.prototype.BPACK_EMPTY_ = 'media/backpack-empty.png';
+Blockly.Backpack.prototype.BPACK_EMPTY_ = 'assets/backpack-empty.png';
 
 /**
  * URL of the full backpack image
  * @type {string}
  * @private
  */
-Blockly.Backpack.prototype.BPACK_FULL_ = 'media/backpack-full.png';
+Blockly.Backpack.prototype.BPACK_FULL_ = 'assets/backpack-full.png';
 
 /**
  * Width of the image.
@@ -141,18 +141,11 @@ Blockly.Backpack.prototype.svgGroup_ = null;
 Blockly.Backpack.prototype.svgBody_ = null;
 
 /**
- * Task ID of small/big animation.
- * @type {number}
- * @private
- */
-Blockly.Backpack.prototype.resizeTask_ = 0;
-
-/**
  * Task ID of opening/closing animation.
  * @type {number}
  * @private
  */
-Blockly.Trashcan.prototype.openTask_ = 0;
+Blockly.Backpack.prototype.openTask_ = 0;
 
 /**
  * Left coordinate of the backpack.
@@ -169,41 +162,31 @@ Blockly.Backpack.prototype.left_ = 0;
 Blockly.Backpack.prototype.top_ = 0;
 
 /**
- * Starting x coordinate for snapping back
- * @type {number}
- * @private
+ * Shared backpack contents across projects/screens.
+ * @type {string[]}
+ * @public
  */
-
-// Commented out, not used
-// Blockly.Backpack.prototype.startX = 0;
-
-/**
- * Starting y coordinate for snapping back
- * @type {number}
- * @private
-*/
-
-// Commented out, not used
-// Blockly.Backpack.prototype.startY = 0;
+Blockly.Backpack.shared_contents = [];
 
 /**
  * Create the backpack SVG elements.
  * @return {!Element} The backpack's SVG group.
  */
-Blockly.Backpack.prototype.createDom = function() {
+Blockly.Backpack.prototype.createDom = function(opt_workspace) {
+  var workspace = opt_workspace || Blockly.getMainWorkspace();
   // insert the flyout after the main workspace (except, there's no
   // svg.insertAfter method, so we need to insert before the thing following
   // the main workspace. Neil Fraser says: this is "less hacky than it looks".
-  var flyoutGroup = this.flyout_.createDom();
+  var flyoutGroup = this.flyout_.createDom('g');
   this.flyout_.svgBackground_.setAttribute('class', 'blocklybackpackFlyoutBackground');
-  if (Blockly.getMainWorkspace().svgGroup_.nextSibling) {
-    Blockly.getMainWorkspace().getParentSvg().insertBefore(flyoutGroup, Blockly.getMainWorkspace().svgGroup_.nextSibling);
+  if (workspace.svgGroup_.nextSibling) {
+    workspace.getParentSvg().insertBefore(flyoutGroup, workspace.svgGroup_.nextSibling);
   } else {
-    Blockly.getMainWorkspace().getParentSvg().appendChild(flyoutGroup);
+    workspace.getParentSvg().appendChild(flyoutGroup);
   }
 
-  this.svgGroup_ = Blockly.createSvgElement('g',null, null);
-  this.svgBody_ = Blockly.createSvgElement('image',
+  this.svgGroup_ = Blockly.utils.createSvgElement('g', {}, null);
+  this.svgBody_ = Blockly.utils.createSvgElement('image',
       {'width': this.WIDTH_, 'height': this.BODY_HEIGHT_, 'id': 'backpackIcon'},
       this.svgGroup_);
   this.svgBody_.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href',
@@ -220,20 +203,15 @@ Blockly.Backpack.prototype.init = function() {
   Blockly.bindEvent_(window, 'resize', this, this.position_);
   Blockly.bindEvent_(this.svgBody_, 'click', this, this.openBackpack);
   Blockly.bindEvent_(this.svgBody_, 'contextmenu', this, this.openBackpackDoc);
-  this.flyout_.init(Blockly.mainWorkspace,
-                    Blockly.getMainWorkspaceMetrics_,
-                    true /*withScrollbar*/);
+  this.flyout_.init(this.workspace_);
 
   // load files for sound effect
-  Blockly.getMainWorkspace().loadAudio_(['media/backpack.mp3', 'media/backpack.ogg', 'media/backpack.wav'], 'backpack');
+  Blockly.getMainWorkspace().loadAudio_(['assets/backpack.mp3', 'assets/backpack.ogg', 'assets/backpack.wav'], 'backpack');
 
-  if (this.getBackpack() == undefined)
+  var bp_contents = this.getContents();
+  if (!bp_contents)
     return;
-
-  var bp_contents = JSON.parse(this.getBackpack());
-  var len = bp_contents.length;
-
-  if (len == 0)
+  if (bp_contents.length == 0)
     this.shrink();
   else
     this.grow();
@@ -249,7 +227,6 @@ Blockly.Backpack.prototype.dispose = function() {
     this.svgGroup_ = null;
   }
   this.svgBody_ = null;
-  this.getMetrics_ = null;
   goog.Timer.clear(this.openTask_);
 };
 
@@ -257,32 +234,30 @@ Blockly.Backpack.prototype.dispose = function() {
  *  Pastes the backpack contents to the current workspace.
  */
 Blockly.Backpack.prototype.pasteBackpack = function() {
-  if (this.getBackpack() == undefined)
+  var bp_contents = this.getContents();
+  if (!bp_contents || bp_contents.length == 0)
     return;
 
-  bp_contents = JSON.parse(this.getBackpack());
-  var len = bp_contents.length;
-  for (var i = 0; i < len; i++) {
+  for (var i = 0; i < bp_contents.length; i++) {
     var xml = Blockly.Xml.textToDom(bp_contents[i]);
     var blk = xml.childNodes[0];
-    var type = blk.getAttribute('type');
     var arr = [];
     this.checkValidBlockTypes(blk,arr);
     var ok = true;
     for (var j = 0; j < arr.length; j++) {
       var type = arr[j];
-      if (! Blockly.Blocks[type]) {
+      if (! this.workspace_.getComponentDatabase().hasType(type)) {
         ok = false;
         break;
       }
     }
     if (ok)
-      Blockly.mainWorkspace.paste(blk);
+      this.workspace_.paste(blk);
     else
       window.alert('Sorry. You cannot paste a block of type "' + type +
         '" because it doesn\'t exist in this workspace.');
   }
-}
+};
 
 /**
  * Recursively traverses the tree starting from block returning
@@ -299,7 +274,7 @@ Blockly.Backpack.prototype.checkValidBlockTypes = function(block, arr) {
     var child = children[i];
     this.checkValidBlockTypes(child,arr);
   }
-}
+};
 
 /**
  *  Copy all blocks in the workspace to backpack
@@ -309,18 +284,20 @@ Blockly.Backpack.prototype.addAllToBackpack = function() {
   var allBlocks = Blockly.mainWorkspace.getAllBlocks();
   var topBlocks = Blockly.mainWorkspace.getTopBlocks(false);
   for (var x = 0; x < topBlocks.length; x++) {
-      block = allBlocks[x];
-      this.addToBackpack(block);
+    this.addToBackpack(topBlocks[x], false);
   }
-}
+  // We have to read back the backpack (getContents) and store it again
+  // this time stating that it should be pushed up to the server
+  this.setContents(this.getContents(), true); // A little klunky but gets the job done
+};
 
 /**
  *  The backpack is an array containing 0 or more
  *   blocks
  */
-Blockly.Backpack.prototype.addToBackpack = function(block) {
-  if (this.getBackpack() == undefined) {
-    this.setBackpack(JSON.stringify([]));
+Blockly.Backpack.prototype.addToBackpack = function(block, store) {
+  if (this.getContents() == undefined) {
+    this.setContents([], false);
   }
 
   // Copy is made of the expanded block.
@@ -335,12 +312,12 @@ Blockly.Backpack.prototype.addToBackpack = function(block) {
   block.setCollapsed(isCollapsed);
 
   // Add the block to the backpack
-  var backpack = this.getBackpack();
-  var bp_contents = JSON.parse(backpack);
-  var len = bp_contents.length;
-  var newBlock = "<xml>" + Blockly.Xml.domToText(xmlBlock) + "</xml>";
-  bp_contents[len] = newBlock;
-  this.setBackpack(JSON.stringify(bp_contents));
+  var bp_contents = this.getContents();
+  bp_contents.push("<xml>" + Blockly.Xml.domToText(xmlBlock) + "</xml>");
+  // We technically do not need to set the contents here since the contents are manipulated by
+  // reference, but separating the setting from modifying allows us to use different, non-in-memory
+  // storage in the future.
+  this.setContents(bp_contents, store);
   this.grow();
   Blockly.getMainWorkspace().playAudio('backpack');
 
@@ -350,7 +327,11 @@ Blockly.Backpack.prototype.addToBackpack = function(block) {
     this.openBackpack();
     this.isAdded = false;
   }
-}
+};
+
+Blockly.Backpack.prototype.hide = function() {
+  this.flyout_.hide();
+};
 
 Blockly.Backpack.prototype.hide = function() {
   this.flyout_.hide();
@@ -392,9 +373,9 @@ Blockly.Backpack.prototype.openBackpackDoc = function(e) {
                                          function() {
                                            dialog.hide();
                                          });
-  }
+  };
   options.push(backpackDoc);
-  Blockly.ContextMenu.show(e, options);
+  Blockly.ContextMenu.show(e, options, this.workspace_.RTL);
   // Do not propagate to Blockly, nor show the browser context menu
   //e.stopPropagation();
   //e.preventDefault();
@@ -403,26 +384,19 @@ Blockly.Backpack.prototype.openBackpackDoc = function(e) {
 /**
  * On left click, open backpack and view flyout
  */
-Blockly.Backpack.prototype.openBackpack = function(e){
+Blockly.Backpack.prototype.openBackpack = function() {
   if (!this.isAdded && this.flyout_.isVisible()) {
     this.flyout_.hide();
   } else {
-    var backpack = JSON.parse(this.getBackpack());
+    var backpack = this.getContents();
     //get backpack contents from java
 
     var len = backpack.length;
-    var newBackpack = []
+    var newBackpack = [];
     for (var i = 0; i < len; i++) {
-      var dom = Blockly.Xml.textToDom(backpack[i]).firstChild;
-      newBackpack[i] = dom;
+      newBackpack[i] = Blockly.Xml.textToDom(backpack[i]).firstChild;
     }
     this.flyout_.show(newBackpack);
-  }
-  /*
-  if (e) {
-    // Stop event handling by parent elements
-    e.stopPropagation();
-    e.preventDefault();
   }
   */
 };
@@ -430,17 +404,14 @@ Blockly.Backpack.prototype.openBackpack = function(e){
 /**
  * When block is let go over the backpack, copy it and return to original position
  * @param {!Event} e Mouse up event
- * @param startX x coordinate of the mouseDown event
- * @param startY y coordinate of the mouseDown event
+ * @param {!goog.math.Coordinate} start coordinate of the mouseDown event
  */
 Blockly.Backpack.prototype.onMouseUp = function(e, start){
-  var startX = start.x,
-      startY = start.y;
   var xy = Blockly.selected.getRelativeToSurfaceXY();
   var diffXY = goog.math.Coordinate.difference(start, xy);
   Blockly.selected.moveBy(diffXY.x, diffXY.y);
   Blockly.getMainWorkspace().render();
-}
+};
 
 /**
  * Determines if the mouse (with a block) is currently over the backpack.
@@ -465,15 +436,13 @@ Blockly.Backpack.prototype.onMouseMove = function(e) {
 };
 
 Blockly.Backpack.prototype.mouseIsOver = function(e) {
-  xy = Blockly.convertCoordinates(Blockly.getMainWorkspace(), e.clientX, e.clientY, true);
+  var xy = Blockly.convertCoordinates(Blockly.getMainWorkspace(), e.clientX, e.clientY, true);
   var mouseX = xy.x;
   var mouseY = xy.y;
-  var over = (mouseX > this.left_) &&
-               (mouseX < this.left_ + this.WIDTH_) &&
-               (mouseY > this.top_) &&
-               (mouseY < this.top_ + this.BODY_HEIGHT_);
-  this.isOver = over;
-  return over;
+  return (mouseX > this.left_) &&
+         (mouseX < this.left_ + this.WIDTH_) &&
+         (mouseY > this.top_) &&
+         (mouseY < this.top_ + this.BODY_HEIGHT_);
 };
 
 /**
@@ -504,7 +473,7 @@ Blockly.Backpack.prototype.animateBackpack_ = function() {
       icon.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', Blockly.pathToBlockly + this.BPACK_CLOSED_);
     }
   }
-}
+};
 
 /**
  * Flip the lid shut.
@@ -512,7 +481,7 @@ Blockly.Backpack.prototype.animateBackpack_ = function() {
  */
 Blockly.Backpack.prototype.close = function() {
   this.setOpen_(false);
-}
+};
 
 /**
  * Scales the backpack to a large size to indicate it contains blocks.
@@ -522,14 +491,13 @@ Blockly.Backpack.prototype.grow = function() {
     return;
   var icon = document.getElementById('backpackIcon');
   icon.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', Blockly.pathToBlockly + this.BPACK_FULL_);
-  var metrics = this.workspace_.getMetrics();
   this.svgBody_.setAttribute('transform','scale(1.2)');
   this.MARGIN_SIDE_ = this.MARGIN_SIDE_ / 1.2;
   this.BODY_HEIGHT_ = this.BODY_HEIGHT_ * 1.2;
   this.WIDTH_ = this.WIDTH_ * 1.2;
   this.position_();
   this.isLarge = true;
-}
+};
 
 /**
  * Scales the backpack to a small size to indicate it is empty.
@@ -539,24 +507,23 @@ Blockly.Backpack.prototype.shrink = function() {
     return;
   var icon = document.getElementById('backpackIcon');
   icon.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', Blockly.pathToBlockly + this.BPACK_CLOSED_);
-  var metrics = this.workspace_.getMetrics();
   this.svgBody_.setAttribute('transform','scale(1)');
   this.BODY_HEIGHT_ = this.BODY_HEIGHT_ / 1.2;
   this.WIDTH_ = this.WIDTH_ / 1.2;
   this.MARGIN_SIDE_ = this.MARGIN_SIDE_ * 1.2;
   this.position_();
   this.isLarge = false;
-}
+};
 
 /**
  * Empties the backpack and shrinks its image.
  */
 Blockly.Backpack.prototype.clear = function() {
-  if (Blockly.mainWorkspace.backpack.confirmClear()) {
-    this.setBackpack(JSON.stringify([]));
+  if (this.confirmClear()) {
+    this.setContents([], true);
     this.shrink();
   }
-}
+};
 
 Blockly.Backpack.prototype.confirmClear = function() {
   return confirm(Blockly.Msg.BACKPACK_CONFIRM_EMPTY);
@@ -566,17 +533,24 @@ Blockly.Backpack.prototype.confirmClear = function() {
  * Returns count of the number of entries in the backpack.
  */
 Blockly.Backpack.prototype.count = function() {
-  if (this.getBackpack() == null)
-    return 0;
-  var bp_contents = JSON.parse(this.getBackpack());
-  return bp_contents.length;
-}
+  var bp_contents = this.getContents();
+  return bp_contents ? bp_contents.length : 0;
+};
 
-Blockly.Backpack.prototype.getBackpack = function() {
-  return window.parent.BlocklyPanel_getBackpack();
-}
+/**
+ * Get the contents of the shared Backpack.
+ * @returns {string[]} Backpack contents encoded as an array of XML strings.
+ */
+Blockly.Backpack.prototype.getContents = function() {
+  return Blockly.Backpack.shared_contents;
+};
 
-Blockly.Backpack.prototype.setBackpack = function(backpack) {
-  window.parent.BlocklyPanel_setBackpack(backpack);
-}
-
+/**
+ * Set the contents of the shared Backpack.
+ * @param {string[]} backpack Array of XML strings to set as the new Backpack contents.
+ * @param {boolean=false} store If true, store the backpack as a user file.
+ */
+Blockly.Backpack.prototype.setContents = function(backpack, store) {
+  Blockly.Backpack.shared_contents = backpack;
+  if (store) window.parent.BlocklyPanel_storeBackpack(JSON.stringify(backpack));
+};

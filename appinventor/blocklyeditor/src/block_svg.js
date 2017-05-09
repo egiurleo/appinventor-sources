@@ -18,7 +18,6 @@ goog.require('Blockly.BlockSvg');
 // App Inventor extensions to Blockly
 goog.require('AI.Blockly.Instrument');
 goog.require('AI.Blockly.Error');
-goog.require('AI.Blockly.WarningHandler');
 
 Blockly.BlockSvg.DISTANCE_45_INSIDE = (1 - Math.SQRT1_2) *
   (Blockly.BlockSvg.CORNER_RADIUS - 1) + 1;
@@ -56,9 +55,9 @@ Blockly.BlockSvg.prototype.onMouseDown_ = (function(func) {
   } else {
     var wrappedFunc = function(e){
       if (Blockly.FieldFlydown.openFieldFlydown_) {
-        if (goog.dom.contains(Blockly.getMainWorkspace().FieldFlydown.svgGroup_, this.svgGroup_)) {
+        if (goog.dom.contains(Blockly.getMainWorkspace().flydown_.svgGroup_, this.svgGroup_)) {
           //prevent hiding the flyout if a child block is the target
-          Blockly.mainWorkspace.FieldFlydown.shouldHide = false;
+          Blockly.getMainWorkspace().flydown_.shouldHide = false;
         }
       }
       var retval = func.call(this, e);
@@ -80,8 +79,8 @@ Blockly.BlockSvg.prototype.onMouseMove_ = (function(func) {
     var wrappedFunc = function(e) {
       func.call(this, e);
       if (Blockly.dragMode_ == Blockly.DRAG_FREE) {
-        if (Blockly.getMainWorkspace().backpack) {
-          Blockly.getMainWorkspace().backpack.onMouseMove(e);
+        if (Blockly.getMainWorkspace().hasBackpack()) {
+          Blockly.getMainWorkspace().getBackpack().onMouseMove(e);
         }
       }
     };
@@ -97,7 +96,6 @@ Blockly.BlockSvg.prototype.onMouseMove_ = (function(func) {
  * @param {!Event} e Mouse up event.
  * @private
  */
-// This provides an instrumentation wrapper around the real onMouseUp_
 Blockly.BlockSvg.prototype.onMouseUp_ = (function(func) {
   if (func.isInstrumented) {
     return func;
@@ -108,10 +106,10 @@ Blockly.BlockSvg.prototype.onMouseUp_ = (function(func) {
       Blockly.getMainWorkspace().resetArrangements();
       try {
         var result = func.call(this, e);
-        if (Blockly.getMainWorkspace().backpack &&
-            Blockly.getMainWorkspace().backpack.isOpen) {
-          var backpack = Blockly.getMainWorkspace().backpack;
-          backpack.addToBackpack(Blockly.selected);
+        if (Blockly.getMainWorkspace().hasBackpack() &&
+            Blockly.getMainWorkspace().getBackpack().isOpen) {
+          var backpack = Blockly.getMainWorkspace().getBackpack();
+          backpack.addToBackpack(Blockly.selected, true);
           backpack.onMouseUp(e, Blockly.selected.dragStartXY_);
         }
         return result;
@@ -119,10 +117,11 @@ Blockly.BlockSvg.prototype.onMouseUp_ = (function(func) {
         if (! Blockly.Instrument.avoidRenderWorkspaceInMouseUp) {
           Blockly.mainWorkspace.render();
         }
-        Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
+        if (this.workspace && this.workspace.getWarningHandler()) {
+          this.workspace.getWarningHandler().checkAllBlocksForWarningsAndErrors();
+        }
         var stop = new Date().getTime();
-        var timeDiff = stop - start;
-        Blockly.Instrument.stats.totalTime = timeDiff;
+        Blockly.Instrument.stats.totalTime = stop - start;
         Blockly.Instrument.displayStats('onMouseUp');
       }
     };
@@ -170,15 +169,15 @@ Blockly.BlockSvg.prototype.setErrorIconText = function(text) {
  * @type {boolean}
  */
 Blockly.BlockSvg.isRenderingOn = true;
-
+/*
 // Instruments render
 Blockly.BlockSvg.prototype.render = (function(func) {
   if (func.isInstrumented) {
     return func;
   } else {
-    var f = function() {
+    var f = function(opt_bubble) {
       if (Blockly.BlockSvg.isRenderingOn) {
-        func.call(this);
+        func.call(this, opt_bubble);
         // TODO(ewpatton): Realtime no longer in Blockly, consider removing
         //if (Blockly.Realtime.isEnabled() && !Blockly.Realtime.withinSync) {
         //  Blockly.Realtime.blockChanged(this);
@@ -191,30 +190,87 @@ Blockly.BlockSvg.prototype.render = (function(func) {
     return f;
   }
 })(Blockly.BlockSvg.prototype.render);
+*/
+
+if (Blockly.Instrument.useRenderDown) {
+
+Blockly.BlockSvg.prototype.render = function(opt_bubble) {
+  this.renderDown();
+
+  // Render all blocks above this one (propagate a reflow).
+  if (opt_bubble !== false) {
+    if (this.parentBlock_) {
+      var top = this.parentBlock_;
+      while (top.parentBlock_) top = top.parentBlock_;
+      top.render(false);
+    } else {
+      this.workspace.resizeContents();
+    }
+  }
+};
 
 /**
  * [lyn, 04/01/14] Render a tree of blocks from top down rather than bottom up.
  * This is in contrast to render(), which renders a block and all its antecedents.
  */
 Blockly.BlockSvg.prototype.renderDown = function() {
-  if (Blockly.Block.isRenderingOn) {
+  if (Blockly.BlockSvg.isRenderingOn) {
     goog.asserts.assertObject(this.svgGroup_,
       ' Uninitialized block cannot be renderedDown.  Call block.initSvg()');
-    this.rendered = true;
     // Recursively renderDown all my children (as long as I'm not collapsed)
     if (! (Blockly.Instrument.avoidRenderDownOnCollapsedSubblocks && this.isCollapsed())) {
       var childBlocks = this.childBlocks_;
       for (var c = 0, childBlock; childBlock = childBlocks[c]; c++) {
         childBlock.renderDown();
       }
+      this.renderHere();
+    } else {
+      // nextConnection is a "child" block, but needs to be rendered because it's not collapsed.
+      if (Blockly.Instrument.avoidRenderDownOnCollapsedSubblocks &&
+        this.nextConnection && this.nextConnection.targetBlock()) {
+        this.nextConnection.targetBlock().renderDown();
+      }
+      this.renderHere();
     }
-    this.render(false);
     Blockly.Instrument.stats.renderDownCalls++; //***lyn
   }
   // [lyn, 04/08/14] Because renderDown is recursive, doesn't make sense to track its time here.
 };
 
-if (Blockly.Instrument.useRenderDown) {
+/**
+ * Render this block. Assumes descendants have already been rendered.
+ */
+Blockly.BlockSvg.prototype.renderHere = function(opt_bubble) {
+  var start = new Date().getTime();
+  Blockly.Field.startCache();
+  this.rendered = true;
+
+  // Now render me (even if I am collapsed, since still need to show collapsed block)
+  var cursorX = Blockly.BlockSvg.SEP_SPACE_X;
+  if (this.RTL) {
+    cursorX = -cursorX;
+  }
+  // Move the icons into position.
+  var icons = this.getIcons();
+  for (var x = 0; x < icons.length; x++) {
+    cursorX = icons[x].renderIcon(cursorX);
+  }
+  cursorX += this.RTL ?
+      Blockly.BlockSvg.SEP_SPACE_X : -Blockly.BlockSvg.SEP_SPACE_X;
+  // If there are no icons, cursorX will be 0, otherwise it will be the
+  // width that the first label needs to move over by.
+
+  var inputRows = this.renderCompute_(cursorX);
+  this.renderDraw_(cursorX, inputRows);
+  this.renderMoveConnections_();
+
+  Blockly.Field.stopCache();
+  var stop = new Date().getTime();
+  var timeDiff = stop-start;
+  Blockly.Instrument.stats.renderHereCalls++;
+  Blockly.Instrument.stats.renderHereTime += timeDiff;
+};
+
   /**
    * Set whether the block is collapsed or not.
    * @param {boolean} collapsed True if collapsed.
@@ -250,7 +306,9 @@ if (Blockly.Instrument.useRenderDown) {
       renderList[0] = this;
     }
     if (this.rendered) {
-      this.renderDown();
+      for (var i = 0, block; block = renderList[i]; i++) {
+        block.render();
+      }
     }
   };
 }
@@ -283,8 +341,8 @@ Blockly.BlockSvg.prototype.setCollapsed = (function(func) {
  */
 Blockly.BlockSvg.prototype.addBadBlock = function() {
   if (this.rendered) {
-    Blockly.addClass_(/** @type {!Element} */ (this.svgGroup_),
-                      'badBlock');
+    Blockly.utils.addClass(/** @type {!Element} */ (this.svgGroup_),
+                           'badBlock');
     // Move the selected block to the top of the stack.
     this.svgGroup_.parentNode.appendChild(this.svgGroup_);
   }
@@ -295,8 +353,8 @@ Blockly.BlockSvg.prototype.addBadBlock = function() {
  */
 Blockly.BlockSvg.prototype.removeBadBlock = function() {
   if (this.rendered) {
-    Blockly.removeClass_(/** @type {!Element} */ (this.svgGroup_),
-                         'badBlock');
+    Blockly.utils.removeClass(/** @type {!Element} */ (this.svgGroup_),
+                              'badBlock');
     // Move the selected block to the top of the stack.
     this.svgGroup_.parentNode.appendChild(this.svgGroup_);
   }
@@ -306,7 +364,7 @@ Blockly.BlockSvg.prototype.removeBadBlock = function() {
  * Check to see if the block is marked as bad.
  */
 Blockly.BlockSvg.prototype.isBadBlock = function() {
-  return Blockly.hasClass_(/** @type {!Element} */ (this.svgGroup_),
+  return Blockly.utils.hasClass(/** @type {!Element} */ (this.svgGroup_),
     'badBlock');
 };
 
@@ -336,21 +394,24 @@ Blockly.BlockSvg.prototype.notBadBlock = function() {
  * Extend Blockly.BlockSvg.prototype.dispose with AI2-specific functionality.
  */
 Blockly.BlockSvg.prototype.dispose = (function(func) {
-    if (func.isWrapped) {
-      return func;
-    } else {
-      var wrappedFunc = function() {
-        try {
-          func.call(this);
-        } finally {
-          // Remove any associated errors or warnings.
-          Blockly.WarningHandler.checkDisposedBlock.call(this);
+  if (func.isWrapped) {
+    return func;
+  } else {
+    var wrappedFunc = function(healStack, animate) {
+      var workspace = this.workspace;
+      try {
+        func.call(this, healStack, animate);
+      } finally {
+        // Remove any associated errors or warnings.
+        if (workspace && workspace.getWarningHandler()) {  // Blocks in drawers do not have a workspace
+          workspace.getWarningHandler().checkDisposedBlock(this);
         }
-      };
-      wrappedFunc.isWrapped = true;
-      return wrappedFunc;
-    }
-  })(Blockly.BlockSvg.prototype.dispose);
+      }
+    };
+    wrappedFunc.isWrapped = true;
+    return wrappedFunc;
+  }
+})(Blockly.BlockSvg.prototype.dispose);
 
 /**
  * Set this block's error text.
@@ -432,4 +493,28 @@ Blockly.BlockSvg.prototype.setErrorText = function(text, opt_id) {
     // Adding or removing a error icon will cause the block to change shape.
     this.bumpNeighbours_();
   }
+};
+
+/**
+ * Get the top-most workspace. Typically this is the current workspace except for flyout/flydowns.
+ * @returns {!Blockly.WorkspaceSvg}
+ */
+Blockly.BlockSvg.prototype.getTopWorkspace = function() {
+  var workspace = this.workspace;
+  while (workspace.targetWorkspace) workspace = workspace.targetWorkspace;
+  return workspace;
+};
+
+/**
+ * Add the selection highlight to the block.
+ */
+Blockly.BlockSvg.prototype.addSelect = function() {
+  Blockly.utils.addClass(this.svgGroup_, 'blocklySelected');
+  var block_0 = this;
+  do {
+    var root = block_0.getSvgRoot();
+    if (!root.parentNode) break;  // not yet attached to DOM
+    root.parentNode.appendChild(root);
+    block_0 = block_0.getParent();
+  } while (block_0);
 };
