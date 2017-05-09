@@ -53,12 +53,15 @@ public class AssetList extends Composite implements ProjectChangeListener {
     assetList = new Tree();
     assetList.setWidth("100%");
 
+    assetList.setTabIndex(-1);
+
     panel = new VerticalPanel();
     panel.setWidth("100%");
 
     panel.add(assetList);
 
     TextButton addButton = new TextButton(MESSAGES.addButton());
+    addButton.setTabIndex(-2);
     addButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -137,14 +140,14 @@ public class AssetList extends Composite implements ProjectChangeListener {
   // ProjectChangeListener implementation
   @Override
   public void onProjectLoaded(Project project) {
-    OdeLog.log("AssetList: got onProjectLoaded for " + project.getProjectId() + 
+    OdeLog.log("AssetList: got onProjectLoaded for " + project.getProjectId() +
         ", current project is " + projectId);
     refreshAssetList();
   }
 
   @Override
   public void onProjectNodeAdded(Project project, ProjectNode node) {
-    OdeLog.log("AssetList: got projectNodeAdded for node " + node.getFileId() 
+    OdeLog.log("AssetList: got projectNodeAdded for node " + node.getFileId()
         + " and project "  + project.getProjectId() + ", current project is " + projectId);
     if (node instanceof YoungAndroidAssetNode) {
       refreshAssetList();
@@ -153,7 +156,7 @@ public class AssetList extends Composite implements ProjectChangeListener {
 
   @Override
   public void onProjectNodeRemoved(Project project, ProjectNode node) {
-    OdeLog.log("AssetLIst: got onProjectNodeRemoved for node " + node.getFileId() 
+    OdeLog.log("AssetLIst: got onProjectNodeRemoved for node " + node.getFileId()
         + " and project "  + project.getProjectId() + ", current project is " + projectId);
     if (node instanceof YoungAndroidAssetNode) {
       refreshAssetList();
