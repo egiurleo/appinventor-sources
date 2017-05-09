@@ -24,6 +24,7 @@ Blockly.Keyboard.connectionIndex = -1;
 Blockly.Keyboard.fields = [];
 Blockly.Keyboard.fieldIndex = -1;
 
+// maintain an array of keys that have been pressed simultaneously for multi-key shortcuts
 Blockly.Keyboard.keysDown = [];
 
 var keyCodes = {
@@ -54,7 +55,14 @@ Blockly.Keyboard.onKeyDown_ = function(e) {
 
   var keyCode = e.keyCode;
 
-  Blockly.Keyboard.updateBlocksLevel();
+  /*
+   * TODO (egiurleo): currently, I am navigating the workspace by storing a list of the blocks
+   *  on the current level, as well as the index of the selected block in that list
+   *  - is there a more straightforward way to do that?
+   *  - I currently update that list/index every time a keyboard event is triggered; might it make
+   *    more sense to only do that when blocks are added/deleted/moved from workspace?
+   */
+  Blockly.Keyboard.updateCurrentBlocksListAndIndex();
   Blockly.Keyboard.keysDown.push(keyCode);
 
   if(keyCode == keyCodes.DOWN) {
@@ -90,19 +98,23 @@ Blockly.Keyboard.onKeyDown_ = function(e) {
       Blockly.Keyboard.selectBlockToMove();
     } else if(Blockly.selected && Blockly.highlightedConnection_) { // if you're moving the block to a certain connetion
       Blockly.Keyboard.moveSelectedBlockToSelectedConnection();
-    } else if(Blockly.Keyboard.fieldIndex > -1) {
+    } else if(Blockly.Keyboard.fieldIndex > -1) { // if you're selecting a field
       Blockly.Keyboard.accessField();
     }
   } else if(keyCode == keyCodes.ESC || keyCode == keyCodes.TAB) { // unselect everything
     if(Blockly.Keyboard.fieldIndex == -1) {
-      Blockly.Keyboard.resetSelection(); //if you're not exiting out of a field
+      Blockly.Keyboard.resetSelection(); // if you're exiting the workspace
     } else {
-      Blockly.Keyboard.unselectField();
+      Blockly.Keyboard.unselectField(); // if you're just getting out of field-mode
     }
   }
 }
 
-Blockly.Keyboard.checkKeyUp_ = function(e) {
+/*
+ * React to a keyup event
+ * @param {Event} e
+ */
+Blockly.Keyboard.onKeyUp_ = function(e) {
   var keyCode = e.keyCode;
 
   if(keyCode == keyCodes.U && Blockly.Keyboard.keysDown.indexOf(keyCodes.CTRL) != -1) {
@@ -129,7 +141,7 @@ Blockly.Keyboard.selectFirstBlockInWorkspace = function() {
   }
 
   Blockly.Keyboard.currentBlocksIndex = 0;
-  Blockly.Keyboard.selectCurrentBlock();
+  Blockly.Keyboard.highlightCurrentBlock();
 }
 
 /*
@@ -144,7 +156,7 @@ Blockly.Keyboard.selectNextBlockInLevel = function() {
 
   Blockly.Keyboard.unselectSelectedBlock();
   Blockly.Keyboard.currentBlocksIndex = Blockly.Keyboard.wrapIncrement(Blockly.Keyboard.currentBlocksLevel, Blockly.Keyboard.currentBlocksIndex);
-  Blockly.Keyboard.selectCurrentBlock();
+  Blockly.Keyboard.highlightCurrentBlock();
 }
 
 /*
@@ -159,7 +171,7 @@ Blockly.Keyboard.selectPreviousBlockInLevel = function() {
 
   Blockly.Keyboard.unselectSelectedBlock();
   Blockly.Keyboard.currentBlocksIndex = Blockly.Keyboard.wrapDecrement(Blockly.Keyboard.currentBlocksLevel, Blockly.Keyboard.currentBlocksIndex);
-  Blockly.Keyboard.selectCurrentBlock();
+  Blockly.Keyboard.highlightCurrentBlock();
 }
 
 /*
@@ -177,7 +189,7 @@ Blockly.Keyboard.selectFirstBlockInNextLevel = function() {
     Blockly.Keyboard.unselectSelectedBlock();
     Blockly.Keyboard.currentBlocksLevel = Blockly.Keyboard.currentBlocksLevel[Blockly.Keyboard.currentBlocksIndex].childBlocks_;
     Blockly.Keyboard.currentBlocksIndex = 0;
-    Blockly.Keyboard.selectCurrentBlock();
+    Blockly.Keyboard.highlightCurrentBlock();
   }
 }
 
@@ -205,7 +217,7 @@ Blockly.Keyboard.selectFirstBlockInPreviousLevel = function() {
     // do nothing, there is no parent
   }
 
-  Blockly.Keyboard.selectCurrentBlock();
+  Blockly.Keyboard.highlightCurrentBlock();
 }
 
 // --------------NAVIGATE AVAILABLE CONNECTIONS WHEN MOVING BLOCKS--------------
@@ -284,7 +296,7 @@ Blockly.Keyboard.selectBlockToMove = function() {
     var selectedBlockConnection = blockToMove.outputConnection ? blockToMove.outputConnection : blockToMove.previousConnection;
     Blockly.Keyboard.possibleConnections = connections.filter(function(connection) {
       var isTargetConnection = connection.targetConnection == selectedBlockConnection;
-      var isDescendent = Blockly.Keyboard.isDescendent(connection.sourceBlock_, blockToMove);
+      var isDescendent = blockToMove.getDescendants().indexOf(connection.sourceBlock_) != -1;
       return connection.canConnectWithReason_(selectedBlockConnection) == Blockly.Connection.CAN_CONNECT && !isTargetConnection && !isDescendent;
     });
 
@@ -298,12 +310,16 @@ Blockly.Keyboard.selectBlockToMove = function() {
 }
 
 // --------------SELECTING FIELDS--------------
+/*
+ * selectFirstField
+ *    compile a list of fields in the currently selected block and highlight the first one
+ */
 Blockly.Keyboard.selectFirstField = function() {
   if(!Blockly.selected) {
     return;
   }
 
-  // for each field, see if it's a text input or drop down, if so edit it
+  // see if each field is editable; if so, add it to the list
   Blockly.selected.inputList.forEach(function(input) {
     if(input.fieldRow.length > 0) {
       input.fieldRow.forEach(function(field) {
@@ -316,38 +332,63 @@ Blockly.Keyboard.selectFirstField = function() {
 
   if(Blockly.Keyboard.fields.length > 0) {
     Blockly.Keyboard.fieldIndex = 0;
-    Blockly.Keyboard.selectCurrentField();
+    Blockly.Keyboard.highlightCurrentField();
   }
 }
 
+/*
+ * selectNextField
+ *    highlight the next available field in the selected block
+ */
 Blockly.Keyboard.selectNextField = function() {
-  Blockly.Keyboard.unselectCurrentField();
+  Blockly.Keyboard.unhighlightCurrentField();
   Blockly.Keyboard.fieldIndex = Blockly.Keyboard.wrapIncrement(Blockly.Keyboard.fields, Blockly.Keyboard.fieldIndex);
-  Blockly.Keyboard.selectCurrentField();
+  Blockly.Keyboard.highlightCurrentField();
 }
 
+/*
+ * selectPreviousField
+ *    highlight the previous available field in the selected block
+ */
 Blockly.Keyboard.selectPreviousField = function() {
-  Blockly.Keyboard.unselectCurrentField();
+  Blockly.Keyboard.unhighlightCurrentField();
   Blockly.Keyboard.fieldIndex = Blockly.Keyboard.wrapDecrement(Blockly.Keyboard.fields, Blockly.Keyboard.fieldIndex);
-  Blockly.Keyboard.selectCurrentField();
+  Blockly.Keyboard.highlightCurrentField();
 }
 
+/*
+ * accessField
+ *    show the editor for the currently highlighted field
+ *  TODO (egiurleo): transfer focus to that field?
+ */
 Blockly.Keyboard.accessField = function() {
   Blockly.Keyboard.fields[Blockly.Keyboard.fieldIndex].showEditor_();
 }
 
+/*
+ * unselectField
+ *    remove any field selection that currently exists, unhighlighting currently highlighted field
+ */
 Blockly.Keyboard.unselectField = function() {
-  Blockly.Keyboard.unselectCurrentField();
+  Blockly.Keyboard.unhighlightCurrentField();
   Blockly.Keyboard.fields = [];
   Blockly.Keyboard.fieldIndex = -1;
 }
 
-Blockly.Keyboard.selectCurrentField = function() {
+/*
+ * highlightCurrentField
+ *    highlight the currently selected field
+ */
+Blockly.Keyboard.highlightCurrentField = function() {
   Blockly.Keyboard.fields[Blockly.Keyboard.fieldIndex].borderRect_.style.stroke = "#FFFFFF";
   Blockly.Keyboard.fields[Blockly.Keyboard.fieldIndex].borderRect_.style.strokeWidth = "2";
 }
 
-Blockly.Keyboard.unselectCurrentField = function() {
+/*
+ * unhighlightCurrentField
+ *    remove highlighting on the selected field
+ */
+Blockly.Keyboard.unhighlightCurrentField = function() {
   if(Blockly.Keyboard.fieldIndex != -1) {
     Blockly.Keyboard.fields[Blockly.Keyboard.fieldIndex].borderRect_.style.stroke = "";
     Blockly.Keyboard.fields[Blockly.Keyboard.fieldIndex].borderRect_.style.strokeWidth = "";
@@ -356,7 +397,7 @@ Blockly.Keyboard.unselectCurrentField = function() {
 
 // --------------USEFUL FUNCTIONS--------------
 
-Blockly.Keyboard.updateBlocksLevel = function() {
+Blockly.Keyboard.updateCurrentBlocksListAndIndex = function() {
   if(!Blockly.selected) {
     Blockly.Keyboard.currentBlocksLevel = [];
     Blockly.Keyboard.currentBlocksIndex = -1;
@@ -376,6 +417,10 @@ Blockly.Keyboard.unselectSelectedBlock = function() {
   Blockly.selected = null;
 }
 
+/*
+ * resetSelection
+ *    unselect all blocks, connections, and fields; essentially exit out of the blocks workspace
+ */
 Blockly.Keyboard.resetSelection = function() {
   if(Blockly.selected) {
     Blockly.Keyboard.unselectSelectedBlock();
@@ -399,8 +444,11 @@ Blockly.Keyboard.resetSelection = function() {
   }
  }
 
-
-Blockly.Keyboard.selectCurrentBlock = function() {
+ /*
+  * highlightCurrentBlock
+  *    add highlight to the currently selected block
+  */
+Blockly.Keyboard.highlightCurrentBlock = function() {
   Blockly.Keyboard.currentBlocksLevel[Blockly.Keyboard.currentBlocksIndex].select();
 }
 
@@ -431,17 +479,5 @@ Blockly.Keyboard.wrapDecrement = function(list, idx) {
     return list.length - 1;
   } else {
     return idx - 1;
-  }
-}
-
-Blockly.Keyboard.isDescendent = function(block1, block2) {
-  if(block2.childBlocks_.length == 0) {
-    return false;
-  } else if(block2.childBlocks_.indexOf(block1) != -1) {
-    return true;
-  } else {
-    block2.childBlocks_.forEach(function(childBlock) {
-      return Blockly.Keyboard.isDescendent(block1, childBlock);
-    });
   }
 }
