@@ -13,7 +13,7 @@ public interface BlockDrawerSelectionListener {
 
   void onBuiltinDrawerSelected(String drawerName);
 
-  void onBuiltinDrawerClosed(String drawerName);
+  void onBuiltinDrawerClosed();
 
   void onGenericDrawerSelected(String drawerName);
 

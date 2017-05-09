@@ -63,25 +63,28 @@ public class SourceStructureExplorer extends Composite {
 
         switch(eventType) {
           case Event.ONKEYDOWN:
-            if(event.getKeyCode() == KeyCodes.KEY_RIGHT) {
+          int keyCode = event.getKeyCode();
+            if(keyCode == KeyCodes.KEY_RIGHT) {
               if(flyoutOpen) {
                 blockSelectorBox.fireFirstBlockInDrawerSelected();
                 updateBlockSelected(true);
               }
-            } else if(event.getKeyCode() == KeyCodes.KEY_UP) {
+            } else if(keyCode == KeyCodes.KEY_UP) {
               if(blockSelected) {
                 blockSelectorBox.firePreviousBlockInDrawerSelected();
               }
-            } else if(event.getKeyCode() == KeyCodes.KEY_DOWN) {
+            } else if(keyCode == KeyCodes.KEY_DOWN) {
               if(blockSelected) {
                 blockSelectorBox.fireNextBlockInDrawerSelected();
               }
-            } else if(event.getKeyCode() == KeyCodes.KEY_LEFT || event.getKeyCode() == KeyCodes.KEY_ESCAPE || event.getKeyCode() == KeyCodes.KEY_TAB) {
+            } else if(keyCode == KeyCodes.KEY_LEFT || keyCode == KeyCodes.KEY_ESCAPE || keyCode == KeyCodes.KEY_TAB) {
               if(flyoutOpen) {
                 updateBlockSelected(false);
                 updateFlyoutOpen(false);
+                blockSelectorBox.fireBuiltinDrawerClosed();
+                break;
               }
-            } else if(event.getKeyCode() == KeyCodes.KEY_ENTER) {
+            } else if(keyCode == KeyCodes.KEY_ENTER) {
               if(blockSelected) {
                 blockSelectorBox.fireAddSelectedBlockToWorkspace();
               }

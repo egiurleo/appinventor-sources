@@ -610,6 +610,13 @@ public final class YaBlocksEditor extends FileEditor
     }
   }
 
+  @Override
+  public void onBuiltinDrawerClosed() {
+    if (Ode.getInstance().getCurrentFileEditor() == this) {
+      hideBuiltinBlocks();
+    }
+  }
+
   /*
    * @see com.google.appinventor.client.editor.youngandroid.BlockDrawerSelectionListener#
    * onBlockDrawerSelected(java.lang.String)

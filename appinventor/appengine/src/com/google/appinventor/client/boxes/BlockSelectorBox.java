@@ -175,16 +175,6 @@ public final class BlockSelectorBox extends Box {
       };
       itemNode.setUserObject(sourceItem);
       builtinNode.addItem(itemNode);
-
-      this.addKeyDownHandler(new KeyDownHandler() {
-        @Override
-        public void onKeyDown(KeyDownEvent event) {
-          int keyCode = event.getNativeKeyCode();
-          if(keyCode == KeyCodes.KEY_ESCAPE || keyCode == KeyCodes.KEY_TAB || keyCode == KeyCodes.KEY_LEFT) {
-            fireBuiltinDrawerClosed(drawerName);
-          }
-        }
-      });
     }
     builtinNode.setState(true);
     return builtinNode;
@@ -264,9 +254,9 @@ public final class BlockSelectorBox extends Box {
     }
   }
 
-  private void fireBuiltinDrawerClosed(String drawerName) {
+  public void fireBuiltinDrawerClosed() {
     for (BlockDrawerSelectionListener listener : drawerListeners) {
-      listener.onBuiltinDrawerClosed(drawerName);
+      listener.onBuiltinDrawerClosed();
     }
   }
 
