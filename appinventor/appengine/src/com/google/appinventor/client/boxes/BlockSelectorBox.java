@@ -128,34 +128,27 @@ public final class BlockSelectorBox extends Box {
             event.preventDefault();
             fireNextBlockInDrawerSelected();
           }
-        } else if(keyCode == KeyCodes.KEY_RIGHT) {
-          if(flyoutOpen) {
-            event.preventDefault();
-            sourceStructureExplorer.enableKeyboard(false);
-            sourceStructureExplorer.setFocus(false);
-            fireFirstBlockInDrawerSelected();
-            blockSelected = true;
-          }
-        } else if(keyCode == KeyCodes.KEY_UP) {
-          if(!blockSelected) {
-            event.preventDefault();
-            sourceStructureExplorer.setFocus(true);
-          } else {
-            event.preventDefault();
-            firePreviousBlockInDrawerSelected();
-          }
-        } else if(keyCode == KeyCodes.KEY_ENTER) {
-          event.preventDefault();
-          fireAddSelectedBlockToWorkspace();
-        } else if(keyCode == KeyCodes.KEY_ESCAPE) {
-          event.preventDefault();
-          sourceStructureExplorer.enableKeyboard(true);
-          getElement().focus();
-          blockSelected = false;
-        } else if(keyCode == KeyCodes.KEY_TAB) {
-          sourceStructureExplorer.enableKeyboard(true);
-          blockSelected = false;
         }
+        // } else if(keyCode == KeyCodes.KEY_UP) {
+        //   if(!blockSelected) {
+        //     event.preventDefault();
+        //     sourceStructureExplorer.setFocus(true);
+        //   } else {
+        //     event.preventDefault();
+        //     firePreviousBlockInDrawerSelected();
+        //   }
+        // } else if(keyCode == KeyCodes.KEY_ENTER) {
+        //   event.preventDefault();
+        //   fireAddSelectedBlockToWorkspace();
+        // } else if(keyCode == KeyCodes.KEY_ESCAPE) {
+        //   event.preventDefault();
+        //   sourceStructureExplorer.changeFlyoutOpen(false);
+        //   getElement().focus();
+        //   blockSelected = false;
+        // } else if(keyCode == KeyCodes.KEY_TAB) {
+        //   sourceStructureExplorer.changeFlyoutOpen(false);
+        //   blockSelected = false;
+        // }
       }
     });
 
@@ -307,7 +300,12 @@ public final class BlockSelectorBox extends Box {
     }
   }
 
+  public void fireFirstBlockInDrawerSelectedPublic() {
+    fireFirstBlockInDrawerSelected();
+  }
+
   private void fireFirstBlockInDrawerSelected() {
+    blockSelected = true;
     for (BlockDrawerSelectionListener listener : drawerListeners) {
       listener.onFirstBlockInDrawerSelected();
     }

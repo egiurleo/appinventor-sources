@@ -14,7 +14,7 @@ import com.google.gwt.event.logical.shared.*;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window; // TODO @egiurleo remove this
 import com.google.appinventor.client.boxes.BlockSelectorBox;
 
 import java.util.Iterator;
@@ -33,8 +33,10 @@ public class SourceStructureExplorer extends Composite {
   private final Tree tree;
   private final TextButton renameButton;
   private final TextButton deleteButton;
-  private boolean keyboardNav = true;
-  private BlockSelectorBox box = null;
+  private boolean flyoutOpen = false;
+
+  private BlockSelectorBox blockSelectorBox = null;
+    //TODO (egiurleo): I really don't like this but I'm blanking on cleaner ways to do it
 
   /**
    * Creates a new source structure explorer.
@@ -44,21 +46,31 @@ public class SourceStructureExplorer extends Composite {
     tree = new Tree(Ode.getImageBundle()) {
       @Override
       public boolean isKeyboardNavigationEnabled(TreeItem currentItem) {
-         return keyboardNav;
+        //  return !flyoutOpen;
+        return true;
       }
 
       @Override
       public void onBrowserEvent(Event event) {
         int eventType = DOM.eventGetType(event);
 
+        /*
+         * Trees don't seem to allow you to capture arrow key events using a standard event
+         *  handler, so I've created a workaround that catches Browser Events and
+         *  selects the first block in the flyout if the right arrow key is pressed -egiurleo
+         */
+
         switch(eventType) {
           case Event.ONKEYDOWN:
-            super.onBrowserEvent(event);
-            if(box != null) {
-              box.getElement().focus();
+            if(event.getKeyCode() == KeyCodes.KEY_RIGHT) {
+              if(flyoutOpen) {
+                blockSelectorBox.fireFirstBlockInDrawerSelectedPublic();
+              }
             }
-          default:
+            super.onBrowserEvent(event);
             break;
+          default:
+            super.onBrowserEvent(event);
         }
       }
     };
@@ -256,6 +268,11 @@ public class SourceStructureExplorer extends Composite {
     }
   }
 
+  /**
+   * Sets screen focus on the tree (for keyboard accessibility)
+   *
+   * @param bool whether you're focusing the tree
+   */
   public void setFocus(boolean bool) {
     tree.setFocus(bool);
   }
@@ -306,11 +323,26 @@ public class SourceStructureExplorer extends Composite {
     selectItem(item, false);
   }
 
-  public void enableKeyboard(boolean b) {
-    keyboardNav = b;
+  /**
+   * Enable or disable arrow key use by saying whether the blocks flyout is open;
+   *  if the flyout is open, the keyboard navigation on the tree should NOT be enabled
+   *
+   * @param bool whether the flyout is open
+   */
+  private void updateFlyoutOpen(boolean bool) {
+    Window.alert("flyout changed: " + bool.toString());
+    flyoutOpen = bool;
   }
 
-  public void setBox(BlockSelectorBox b) {
-    box = b;
+  /**
+   * Give a reference to the BlockSelectorBox so that the SourceStructureExplorer can
+   *  fire an event selecting the first block in the flyout
+   *
+   *  TODO (egiurleo): I don't like this but I can't think of a nicer way to do it right now
+   *
+   * @param box the BlockSelectorBox this
+   */
+  public void setBox(BlockSelectorBox box) {
+    blockSelectorBox = box;
   }
 }
