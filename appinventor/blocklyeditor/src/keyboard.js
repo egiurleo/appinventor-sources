@@ -26,7 +26,25 @@ Blockly.Keyboard.fieldIndex = -1;
 
 Blockly.Keyboard.keysDown = [];
 
-Blockly.Keyboard.workspaceKeyboardInteraction = function(e) {
+var keyCodes = {
+  DOWN: 40,
+  UP: 38,
+  RIGHT: 39,
+  LEFT: 37,
+  ENTER: 13,
+  ESC: 27,
+  TAB: 9,
+  SHIFT: 16
+};
+
+// keyboard events are caught in inject.js
+// TODO (egiurleo): is there a way to do that in here?
+
+/*
+ * React to a keydown event
+ * @param {Event} e
+ */
+Blockly.Keyboard.onKeyDown_ = function(e) {
 
   if (Blockly.mainWorkspace.options.readOnly || Blockly.isTargetInput_(e)) {
     // No key actions on readonly workspaces.
@@ -35,17 +53,6 @@ Blockly.Keyboard.workspaceKeyboardInteraction = function(e) {
   }
 
   var keyCode = e.keyCode;
-
-  var keyCodes = {
-    DOWN: 40,
-    UP: 38,
-    RIGHT: 39,
-    LEFT: 37,
-    ENTER: 13,
-    ESC: 27,
-    TAB: 9,
-    SHIFT: 16
-  };
 
   Blockly.Keyboard.updateBlocksLevel();
   Blockly.Keyboard.keysDown.push(keyCode);
@@ -95,20 +102,8 @@ Blockly.Keyboard.workspaceKeyboardInteraction = function(e) {
   }
 }
 
-Blockly.Keyboard.checkKeyUp = function(e) {
+Blockly.Keyboard.checkKeyUp_ = function(e) {
   var keyCode = e.keyCode;
-
-  var keyCodes = {
-    DOWN: 40,
-    UP: 38,
-    RIGHT: 39,
-    LEFT: 37,
-    ENTER: 13,
-    ESC: 27,
-    TAB: 9,
-    CTRL: 17,
-    U: 85
-  };
 
   if(keyCode == keyCodes.U && Blockly.Keyboard.keysDown.indexOf(keyCodes.CTRL) != -1) {
     if(Blockly.Keyboard.fieldIndex == -1) {

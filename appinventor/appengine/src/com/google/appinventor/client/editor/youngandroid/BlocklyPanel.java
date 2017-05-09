@@ -438,21 +438,21 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
   /**
    * Select the first block in the drawer
    */
-  public void selectBlockInDrawer(int blockNumber) {
+  public void selectFirstBlockInDrawer() {
     if(blocksInited(formName)) {
-      doSelectBlock(formName, blockNumber);
+      doSelectFirstBlockInDrawer(formName);
     }
   }
 
   public void selectNextBlockInDrawer() {
     if(blocksInited(formName)) {
-      doSelectNextBlock(formName);
+      doSelectNextBlockInDrawer(formName);
     }
   }
 
   public void selectPreviousBlockInDrawer() {
     if(blocksInited(formName)) {
-      doSelectPreviousBlock(formName);
+      doSelectPreviousBlockInDrawer(formName);
     }
   }
 
@@ -995,16 +995,16 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     myBlockly.getMainWorkspace().drawer_.showGeneric(drawerName);
   }-*/;
 
-  private static native void doSelectBlock(String formName, int blockNumber) /*-{
+  private static native void doSelectFirstBlockInDrawer(String formName) /*-{
     var selectedBlock = $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_.selectedBlock;
     if(selectedBlock == -1) {
-      $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_.svgList[blockNumber].addSelect();
-      $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_.selectedBlock = blockNumber;
+      $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_.svgList[0].addSelect();
+      $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_.selectedBlock = 0;
     }
 
   }-*/;
 
-  private static native void doSelectNextBlock(String formName) /*-{
+  private static native void doSelectNextBlockInDrawer(String formName) /*-{
     var flyout = $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_;
 
     if(flyout.selectedBlock != -1) {
@@ -1020,7 +1020,7 @@ public class BlocklyPanel extends HTMLPanel implements ComponentDatabaseChangeLi
     }
   }-*/;
 
-  private static native void doSelectPreviousBlock(String formName) /*-{
+  private static native void doSelectPreviousBlockInDrawer(String formName) /*-{
     var flyout = $wnd.Blocklies[formName].getMainWorkspace().drawer_.flyout_;
 
     if(flyout.selectedBlock != -1) {

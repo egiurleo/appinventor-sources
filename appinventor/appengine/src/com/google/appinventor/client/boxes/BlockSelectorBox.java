@@ -254,15 +254,17 @@ public final class BlockSelectorBox extends Box {
     }
   }
 
-  public void fireBuiltinDrawerClosed() {
-    for (BlockDrawerSelectionListener listener : drawerListeners) {
-      listener.onBuiltinDrawerClosed();
-    }
-  }
-
   private void fireGenericDrawerSelected(String drawerName) {
     for (BlockDrawerSelectionListener listener : drawerListeners) {
       listener.onGenericDrawerSelected(drawerName);
+    }
+  }
+
+  // TODO (egiurleo): I'm unhappy that these methods are in BlockSelectorBox but are being
+  //    called from sourceStructureExplorer; will figure out a way to fix that
+  public void fireBuiltinDrawerClosed() {
+    for (BlockDrawerSelectionListener listener : drawerListeners) {
+      listener.onBuiltinDrawerClosed();
     }
   }
 

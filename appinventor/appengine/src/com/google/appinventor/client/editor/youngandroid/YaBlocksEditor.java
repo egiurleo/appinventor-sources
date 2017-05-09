@@ -488,7 +488,7 @@ public final class YaBlocksEditor extends FileEditor
   }
 
   public void selectFirstBlockInDrawer() {
-    blocksArea.selectBlockInDrawer(0);
+    blocksArea.selectFirstBlockInDrawer();
   }
 
   public void selectNextBlockInDrawer() {
