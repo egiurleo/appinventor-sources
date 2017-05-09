@@ -124,31 +124,8 @@ public final class BlockSelectorBox extends Box {
           if(!blockSelected) {
             event.preventDefault();
             sourceStructureExplorer.setFocus(true);
-          } else {
-            event.preventDefault();
-            fireNextBlockInDrawerSelected();
           }
         }
-        // } else if(keyCode == KeyCodes.KEY_UP) {
-        //   if(!blockSelected) {
-        //     event.preventDefault();
-        //     sourceStructureExplorer.setFocus(true);
-        //   } else {
-        //     event.preventDefault();
-        //     firePreviousBlockInDrawerSelected();
-        //   }
-        // } else if(keyCode == KeyCodes.KEY_ENTER) {
-        //   event.preventDefault();
-        //   fireAddSelectedBlockToWorkspace();
-        // } else if(keyCode == KeyCodes.KEY_ESCAPE) {
-        //   event.preventDefault();
-        //   sourceStructureExplorer.changeFlyoutOpen(false);
-        //   getElement().focus();
-        //   blockSelected = false;
-        // } else if(keyCode == KeyCodes.KEY_TAB) {
-        //   sourceStructureExplorer.changeFlyoutOpen(false);
-        //   blockSelected = false;
-        // }
       }
     });
 
@@ -203,7 +180,7 @@ public final class BlockSelectorBox extends Box {
         @Override
         public void onKeyDown(KeyDownEvent event) {
           int keyCode = event.getNativeKeyCode();
-          if(keyCode == KeyCodes.KEY_ESCAPE || keyCode == KeyCodes.KEY_TAB) {
+          if(keyCode == KeyCodes.KEY_ESCAPE || keyCode == KeyCodes.KEY_TAB || keyCode == KeyCodes.KEY_LEFT) {
             fireBuiltinDrawerClosed(drawerName);
           }
         }
@@ -299,30 +276,25 @@ public final class BlockSelectorBox extends Box {
     }
   }
 
-  public void fireFirstBlockInDrawerSelectedPublic() {
-    fireFirstBlockInDrawerSelected();
-  }
-
-  private void fireFirstBlockInDrawerSelected() {
-    blockSelected = true;
+  public void fireFirstBlockInDrawerSelected() {
     for (BlockDrawerSelectionListener listener : drawerListeners) {
       listener.onFirstBlockInDrawerSelected();
     }
   }
 
-  private void fireNextBlockInDrawerSelected() {
+  public void fireNextBlockInDrawerSelected() {
     for (BlockDrawerSelectionListener listener : drawerListeners) {
       listener.onSelectNextBlockInDrawer();
     }
   }
 
-  private void firePreviousBlockInDrawerSelected() {
+  public void firePreviousBlockInDrawerSelected() {
     for (BlockDrawerSelectionListener listener : drawerListeners) {
       listener.onSelectPreviousBlockInDrawer();
     }
   }
 
-  private void fireAddSelectedBlockToWorkspace() {
+  public void fireAddSelectedBlockToWorkspace() {
     for (BlockDrawerSelectionListener listener : drawerListeners) {
       listener.onSelectedBlockAddedToWorkspace();
     }

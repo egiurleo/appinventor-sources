@@ -33,7 +33,9 @@ public class SourceStructureExplorer extends Composite {
   private final Tree tree;
   private final TextButton renameButton;
   private final TextButton deleteButton;
+
   private boolean flyoutOpen = false;
+  private boolean blockSelected = false;
 
   private BlockSelectorBox blockSelectorBox = null;
     //TODO (egiurleo): I really don't like this but I'm blanking on cleaner ways to do it
@@ -46,8 +48,7 @@ public class SourceStructureExplorer extends Composite {
     tree = new Tree(Ode.getImageBundle()) {
       @Override
       public boolean isKeyboardNavigationEnabled(TreeItem currentItem) {
-        //  return !flyoutOpen;
-        return true;
+        return !blockSelected;
       }
 
       @Override
@@ -57,14 +58,32 @@ public class SourceStructureExplorer extends Composite {
         /*
          * Trees don't seem to allow you to capture arrow key events using a standard event
          *  handler, so I've created a workaround that catches Browser Events and
-         *  selects the first block in the flyout if the right arrow key is pressed -egiurleo
+         *  manipulates the block drawer flyout if an arrow key is pressed -egiurleo
          */
 
         switch(eventType) {
           case Event.ONKEYDOWN:
             if(event.getKeyCode() == KeyCodes.KEY_RIGHT) {
               if(flyoutOpen) {
-                blockSelectorBox.fireFirstBlockInDrawerSelectedPublic();
+                blockSelectorBox.fireFirstBlockInDrawerSelected();
+                updateBlockSelected(true);
+              }
+            } else if(event.getKeyCode() == KeyCodes.KEY_UP) {
+              if(blockSelected) {
+                blockSelectorBox.firePreviousBlockInDrawerSelected();
+              }
+            } else if(event.getKeyCode() == KeyCodes.KEY_DOWN) {
+              if(blockSelected) {
+                blockSelectorBox.fireNextBlockInDrawerSelected();
+              }
+            } else if(event.getKeyCode() == KeyCodes.KEY_LEFT || event.getKeyCode() == KeyCodes.KEY_ESCAPE || event.getKeyCode() == KeyCodes.KEY_TAB) {
+              if(flyoutOpen) {
+                updateBlockSelected(false);
+                updateFlyoutOpen(false);
+              }
+            } else if(event.getKeyCode() == KeyCodes.KEY_ENTER) {
+              if(blockSelected) {
+                blockSelectorBox.fireAddSelectedBlockToWorkspace();
               }
             }
             super.onBrowserEvent(event);
@@ -331,6 +350,15 @@ public class SourceStructureExplorer extends Composite {
    */
   public void updateFlyoutOpen(boolean bool) {
     flyoutOpen = bool;
+  }
+
+  /**
+   * Say whether a block has been selected in the blocks flyout drawer
+   *
+   * @param bool whether there is a selected block in the flyout
+   */
+  public void updateBlockSelected(boolean bool) {
+    blockSelected = bool;
   }
 
   /**
