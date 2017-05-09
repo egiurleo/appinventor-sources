@@ -159,7 +159,7 @@
     "./src/generators/yail/procedures.js",
 
     // Repl
-    "./src/replmgr.js"
+    "./src/replmgr.js",
 
     // keyboard interactions
     "./src/keyboard.js",

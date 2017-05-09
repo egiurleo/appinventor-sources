@@ -47,7 +47,7 @@ var keyCodes = {
  */
 Blockly.Keyboard.onKeyDown_ = function(e) {
 
-  if (Blockly.mainWorkspace.options.readOnly || Blockly.isTargetInput_(e)) {
+  if (Blockly.mainWorkspace.options.readOnly || Blockly.utils.isTargetInput(e)) {
     // No key actions on readonly workspaces.
     // When focused on an HTML text input widget, don't trap any keys.
     return;
