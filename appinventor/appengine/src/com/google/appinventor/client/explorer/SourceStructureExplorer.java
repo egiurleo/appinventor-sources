@@ -61,6 +61,9 @@ public class SourceStructureExplorer extends Composite {
          *  manipulates the block drawer flyout if an arrow key is pressed -egiurleo
          */
 
+         // TODO (egiurleo): maybe some of this stuff could be moved into the flyout code,
+         //   but I'm not sure how to capture a keydown event there
+
         switch(eventType) {
           case Event.ONKEYDOWN:
           int keyCode = event.getKeyCode();
