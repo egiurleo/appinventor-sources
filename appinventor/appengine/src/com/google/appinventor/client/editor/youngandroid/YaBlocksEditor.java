@@ -399,6 +399,7 @@ public final class YaBlocksEditor extends FileEditor
         || !selectedDrawer.equals(instanceDrawer)) {
       blocksArea.showComponentBlocks(instanceName);
       selectedDrawer = instanceDrawer;
+      sourceStructureExplorer.updateFlyoutOpen(true);
     } else {
       blocksArea.hideDrawer();
       selectedDrawer = null;
@@ -417,6 +418,7 @@ public final class YaBlocksEditor extends FileEditor
         || !selectedDrawer.equals(builtinDrawer)) {
       blocksArea.showBuiltinBlocks(drawerName);
       selectedDrawer = builtinDrawer;
+      sourceStructureExplorer.updateFlyoutOpen(true);
     } else {
       blocksArea.hideDrawer();
       selectedDrawer = null;
@@ -556,6 +558,41 @@ public final class YaBlocksEditor extends FileEditor
     // Only do something if we are the current file editor
     if (Ode.getInstance().getCurrentFileEditor() == this) {
       showGenericBlocks(drawerName);
+    }
+  }
+
+  @Override
+  public void onDrawerClosed() {
+    if (Ode.getInstance().getCurrentFileEditor() == this) {
+      hideComponentBlocks();
+    }
+  }
+
+  @Override
+  public void onFirstBlockInDrawerSelected() {
+    if (Ode.getInstance().getCurrentFileEditor() == this) {
+      blocksArea.selectFirstBlockInDrawer();
+    }
+  }
+
+  @Override
+  public void onSelectNextBlockInDrawer() {
+    if (Ode.getInstance().getCurrentFileEditor() == this) {
+      blocksArea.selectBlockInDrawer(1);
+    }
+  }
+
+  @Override
+  public void onSelectPreviousBlockInDrawer() {
+    if (Ode.getInstance().getCurrentFileEditor() == this) {
+      blocksArea.selectBlockInDrawer(0);
+    }
+  }
+
+  @Override
+  public void onSelectedBlockAddedToWorkspace() {
+    if (Ode.getInstance().getCurrentFileEditor() == this) {
+      blocksArea.addSelectedBlockToWorkspace();
     }
   }
 

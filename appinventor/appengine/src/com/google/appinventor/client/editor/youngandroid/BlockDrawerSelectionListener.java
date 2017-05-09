@@ -13,15 +13,15 @@ public interface BlockDrawerSelectionListener {
 
   void onBuiltinDrawerSelected(String drawerName);
 
-  // void onBuiltinDrawerClosed();
-
   void onGenericDrawerSelected(String drawerName);
 
-  // void onFirstBlockInDrawerSelected();
-  //
-  // void onSelectNextBlockInDrawer();
-  //
-  // void onSelectPreviousBlockInDrawer();
-  //
-  // void onSelectedBlockAddedToWorkspace();
+  void onDrawerClosed();
+
+  void onFirstBlockInDrawerSelected();
+
+  void onSelectNextBlockInDrawer();
+
+  void onSelectPreviousBlockInDrawer();
+
+  void onSelectedBlockAddedToWorkspace();
 }

@@ -699,6 +699,72 @@ public class BlocklyPanel extends HTMLPanel {
   }-*/;
 
   /**
+   *  Highlight the first block in the open drawer
+   */
+  public native void selectFirstBlockInDrawer() /*-{
+    var selectedBlock =
+      this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+        .drawer_.flyout_.selectedBlock;
+
+    if(selectedBlock == -1) {
+      this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+        .drawer_.flyout_.svgList[0].addSelect();
+      this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+        .drawer_.flyout_.selectedBlock = 0;
+    }
+  }-*/;
+
+  /**
+   * Highlight the next block in the drawer or the previous block
+   * @param {int} next -- 1 to select next block, 0 to select previous
+   */
+  public native void selectBlockInDrawer(int next) /*-{
+    var flyout =
+      this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+        .drawer_.flyout_;
+
+    if(flyout.selectedBlock != -1) {
+      flyout.svgList[flyout.selectedBlock].removeSelect();
+
+      if(next) { //if you're selecting the next block
+        var newBlockNumber = 0;
+        if(flyout.selectedBlock != flyout.svgList.length - 1) { // if it's the last block, select the first
+          newBlockNumber = flyout.selectedBlock + 1;
+        }
+      } else { // if you're selecting the previous block
+        var newBlockNumber = flyout.svgList.length - 1;
+        if(flyout.selectedBlock != 0) { // if it's the first block, select the last
+          newBlockNumber = flyout.selectedBlock - 1;
+        }
+      }
+
+      flyout.svgList[newBlockNumber].addSelect();
+      flyout.selectedBlock = newBlockNumber;
+    }
+  }-*/;
+
+  /**
+   * Add selected block to the workspace
+   */
+  public native void addSelectedBlockToWorkspace() /*-{
+    var flyout =
+      this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+        .drawer_.flyout_;
+    if(flyout.selectedBlock != -1) {
+      var block = flyout.placeNewBlock_(flyout.svgList[flyout.selectedBlock]);
+      block.moveBy(100, 0);
+    }
+  }-*/;
+
+  /**
+   * Highlight the first block in the workspace
+   */
+  public native void selectFirstBlockInWorkspace() /*-{
+    $wnd.Blocklies[formName].Keyboard
+      .selectFirstBlockInWorkspace();
+  }-*/;
+
+  /**
    * @returns true if the blocks drawer is showing, false otherwise.
    */
   public native boolean drawerShowing()/*-{
