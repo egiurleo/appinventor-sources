@@ -35,7 +35,9 @@ var keyCodes = {
   ENTER: 13,
   ESC: 27,
   TAB: 9,
-  SHIFT: 16
+  SHIFT: 16,
+  U: 85,
+  CTRL: 17
 };
 
 // keyboard events are caught in inject.js

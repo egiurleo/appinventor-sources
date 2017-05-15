@@ -696,6 +696,9 @@ public class BlocklyPanel extends HTMLPanel {
   public native void hideDrawer()/*-{
     this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
       .hideDrawer();
+
+    this.@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::workspace
+      .drawer_.flyout_.selectedBlock = -1;
   }-*/;
 
   /**
