@@ -139,10 +139,19 @@ Blockly.TypeBlock.prototype.handleKey = function(e){
       // If the panel is showing the panel, just return to allow deletion in the panel itself
       if (goog.style.isElementShown(goog.dom.getElement(this.typeBlockDiv_))) return;
       // if id is empty, it is deleting inside a block title
-      if (e.target.id === '') return;
+      if (e.target.id === '') {
+        if(Blockly.selected && Blockly.selected.isDeletable()) {
+          Blockly.onKeyDown_(e);
+          return;
+        } else {
+          return
+        }
+      }
+      
       // only when selected and deletable, actually delete the block
       Blockly.onKeyDown_(e);
       return;
+
     }
     if (e.keyCode === 27){ //Dismiss the panel with esc
       this.hide();

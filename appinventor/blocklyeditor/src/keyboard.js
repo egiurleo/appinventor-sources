@@ -24,6 +24,8 @@ Blockly.Keyboard.connectionIndex = -1;
 Blockly.Keyboard.fields = [];
 Blockly.Keyboard.fieldIndex = -1;
 
+Blockly.Keyboard.contextMenu = false;
+
 // maintain an array of keys that have been pressed simultaneously for multi-key shortcuts
 Blockly.Keyboard.keysDown = [];
 
@@ -36,7 +38,7 @@ var keyCodes = {
   ESC: 27,
   TAB: 9,
   SHIFT: 16,
-  C: 67,
+  M: 77,
   U: 85,
   CTRL: 17
 };
@@ -105,7 +107,9 @@ Blockly.Keyboard.onKeyDown_ = function(e) {
       Blockly.Keyboard.accessField();
     }
   } else if(keyCode == keyCodes.ESC || keyCode == keyCodes.TAB) { // unselect everything
-    if(Blockly.Keyboard.fieldIndex == -1) {
+    if(Blockly.Keyboard.contextMenu) {
+      Blockly.Keyboard.hideContextMenu();
+    } else if(Blockly.Keyboard.fieldIndex == -1) {
       Blockly.Keyboard.resetSelection(); // if you're exiting the workspace
     } else {
       Blockly.Keyboard.unselectField(); // if you're just getting out of field-mode
@@ -124,13 +128,36 @@ Blockly.Keyboard.onKeyUp_ = function(e) {
     if(Blockly.Keyboard.fieldIndex == -1 && Blockly.selected) {
       Blockly.Keyboard.selectFirstField();
     }
-  } else if(keyCode == keyCodes.C && Blockly.Keyboard.keysDown.indexOf(keyCodes.CTRL) != -1) {
+  } else if(keyCode == keyCodes.M && Blockly.Keyboard.keysDown.indexOf(keyCodes.CTRL) != -1) {
     if(Blockly.selected) {
-      Blockly.selected.contextMenu.show();
+      Blockly.Keyboard.showBlockContextMenu(e);
+    } else {
+      Blockly.Keyboard.showWorkspaceContextMenu(e);
     }
   }
 
   Blockly.Keyboard.keysDown = [];
+}
+
+// -------------------------CONTEXT MENUS------------------------
+Blockly.Keyboard.showBlockContextMenu = function(e) {
+  // because the keyup event has no coordinates, you must manually add coordinates for the context menu
+  e.clientX = Blockly.selected.startX + 10;
+  e.clientY = Blockly.selected.startY + 10;
+  Blockly.selected.showContextMenu_(e);
+  Blockly.Keyboard.contextMenu = true;
+}
+
+Blockly.Keyboard.showWorkspaceContextMenu = function(e) {
+  e.clientX = Blockly.mainWorkspace.startDragMouseX + 10;
+  e.clientY = Blockly.mainWorkspace.startDragMouseY + 10;
+  Blockly.mainWorkspace.showContextMenu_(e);
+  Blockly.Keyboard.contextMenu = true;
+}
+
+Blockly.Keyboard.hideContextMenu = function() {
+  Blockly.ContextMenu.hide();
+  Blockly.Keyboard.contextMenu = null;
 }
 
 // --------------NAVIGATION AROUND BLOCKS WORKSPACE--------------
