@@ -36,6 +36,7 @@ var keyCodes = {
   ESC: 27,
   TAB: 9,
   SHIFT: 16,
+  C: 67,
   U: 85,
   CTRL: 17
 };
@@ -120,8 +121,12 @@ Blockly.Keyboard.onKeyUp_ = function(e) {
   var keyCode = e.keyCode;
 
   if(keyCode == keyCodes.U && Blockly.Keyboard.keysDown.indexOf(keyCodes.CTRL) != -1) {
-    if(Blockly.Keyboard.fieldIndex == -1) {
+    if(Blockly.Keyboard.fieldIndex == -1 && Blockly.selected) {
       Blockly.Keyboard.selectFirstField();
+    }
+  } else if(keyCode == keyCodes.C && Blockly.Keyboard.keysDown.indexOf(keyCodes.CTRL) != -1) {
+    if(Blockly.selected) {
+      Blockly.selected.contextMenu.show();
     }
   }
 
