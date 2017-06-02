@@ -141,7 +141,6 @@ Blockly.TypeBlock.prototype.handleKey = function(e){
       // if id is empty, it is deleting inside a block title
       if (e.target.id === '') {
         if(Blockly.selected && Blockly.selected.isDeletable()) {
-          e.preventDefault();
           e.target = Blockly.selected.svgGroup_;
           Blockly.onKeyDown_(e);
           return;
